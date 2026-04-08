@@ -34,10 +34,17 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  sqflite: ^2.4.2
+  flutter_riverpod: ^3.3.1
+  path: ^1.9.1
+  google_fonts: ^8.0.2
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -45,9 +52,32 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  mocktail: ^1.0.4
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/launcher_icon.png"
+flutter_native_splash:
+  # --- Светлая тема ---
+  color: "#FFADA5"
+  #image: assets/splash_logo.png
+  background_image: assets/splash_logo.png
+  
+  
+  # --- Тёмная тема ---
+  color_dark: "#301659"
+  #image_dark: assets/splash_logo.png
+  background_image_dark: assets/splash_logo.png
+
+  # --- Специфика Android 12+ ---
+  android_12:
+    image: assets/splash_logo_12.png
+    color: "#FFADA5"
+    color_dark: "#301659"
+
+  # Позиционирование
+  android_gravity: center
 
 # The following section is specific to Flutter packages.
 flutter:
@@ -58,10 +88,18 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
-
+  assets:
+    - assets/recipes.db
+    - assets/icons/breakfast.png
+    - assets/icons/lunch.png
+    - assets/icons/dinner.png
+    - assets/icons/drinks.png
+    - assets/icons/desserts.png
+    - assets/icons/favourite.png
+    - assets/icons/level.png
+    - assets/icons/search.png
+    - assets/icons/menu.png
+    
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

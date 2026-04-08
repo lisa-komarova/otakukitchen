@@ -1,0 +1,135 @@
+recipes
+id
+name
+cooking_time
+level
+category_id
+image_url
+tiktok_url
+telegram_url
+is_favourite
+note
+
+
+animes
+id
+title
+scene_description
+episode
+
+recipes_in_anime
+id
+recipe_id
+anime_id
+
+categories
+id
+name
+icon
+
+ingredients
+id
+name
+
+ingredient_groups
+id
+recipe_id
+title
+order_index
+
+ingredients_in_recipe
+id
+group_id
+ingredient_id
+display_name
+quantity
+unit
+note
+
+recipe_sections
+id
+recipe_id
+title
+order_index
+
+steps
+id
+section_id
+description
+order_index
+
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE categories (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  icon TEXT
+);
+
+CREATE TABLE recipes (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  cooking_time TEXT,
+  level TEXT CHECK(level IN ('easy', 'medium', 'hard')),
+  category_id INTEGER,
+  image_url TEXT,
+  tiktok_url TEXT,
+  telegram_url TEXT,
+  is_favourite INTEGER DEFAULT 0,
+  note TEXT,
+  FOREIGN KEY (category_id) REFERENCES categories(id)
+);
+
+CREATE TABLE animes (
+  id INTEGER PRIMARY KEY,
+  title TEXT NOT NULL,
+  scene_description TEXT,
+  episode TEXT
+);
+
+CREATE TABLE recipes_in_anime (
+  id INTEGER PRIMARY KEY,
+  recipe_id INTEGER,
+  anime_id INTEGER,
+  FOREIGN KEY (recipe_id) REFERENCES recipes(id),
+  FOREIGN KEY (anime_id) REFERENCES animes(id)
+);
+
+
+
+CREATE TABLE ingredient_groups (
+  id INTEGER PRIMARY KEY,
+  recipe_id INTEGER,
+  title TEXT,
+  order_index INTEGER,
+  FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+);
+
+CREATE TABLE ingredients_in_recipe (
+  id INTEGER PRIMARY KEY,
+  group_id INTEGER,
+  ingredient_id INTEGER,
+  display_name TEXT,
+  quantity TEXT,
+  unit TEXT,
+  note TEXT,
+  FOREIGN KEY (group_id) REFERENCES ingredient_groups(id),
+  FOREIGN KEY (ingredient_id) REFERENCES ingredients(id)
+);
+
+CREATE TABLE recipe_sections (
+  id INTEGER PRIMARY KEY,
+  recipe_id INTEGER,
+  title TEXT,
+  order_index INTEGER,
+  FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+);
+
+CREATE TABLE steps (
+  id INTEGER PRIMARY KEY,
+  section_id INTEGER,
+  description TEXT,
+  order_index INTEGER,
+  FOREIGN KEY (section_id) REFERENCES recipe_sections(id)
+);
