@@ -22,7 +22,6 @@ class RecipeDetailsPage extends ConsumerWidget {
         backgroundColor: isDarkMode
             ? AppColors.primaryColor
             : AppColors.background,
-        bottomNavigationBar: _buildBottomNavBar(context),
         body: recipeAsync.when(
           loading: () => const Center(
             child: CircularProgressIndicator(color: Colors.white),
@@ -336,47 +335,7 @@ class RecipeDetailsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildBottomNavBar(BuildContext context) {
-    bool isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.secondary : AppColors.surface,
-        border: BoxBorder.fromLTRB(
-          top: BorderSide(
-            color: isDarkMode ? AppColors.primaryColor : AppColors.background,
-            width: 5,
-          ),
-        ),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          ImageIcon(
-            AssetImage('assets/icons/menu.png'),
-            size: 45,
-            color: AppColors.primaryColor,
-          ),
-          ImageIcon(
-            AssetImage('assets/icons/search.png'),
-            size: 45,
-            color: AppColors.primaryColor,
-          ),
-          ImageIcon(
-            AssetImage('assets/icons/favourite.png'),
-            size: 45,
-            color: AppColors.primaryColor,
-          ),
-        ],
-      ),
-    );
-  }
-
+  
   void _showResetDialog(BuildContext context, WidgetRef ref) {
     bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;

@@ -178,5 +178,26 @@ void main() {
       expect(result, isA<List<Step>>());
       expect(result.length, 2);
     });
+
+        test('getCategories returns list of Category from database', () async {
+      // arrange
+      final maps = [
+        {'id': 1, 'name': 'Main', 'icon': '🍜'},
+        {'id': 2, 'name': 'Desserts', 'icon': '🍰'},
+      ];
+
+      when(() => mockDb.query('categories')).thenAnswer((_) async => maps);
+
+      // act
+      final result = await dataSource.getCategories();
+
+      // assert
+      expect(result, isA<List<Category>>());
+      expect(result.length, 2);
+      expect(result[0].name, 'Main');
+      expect(result[1].icon, '🍰');
+      verify(() => mockDb.query('categories')).called(1);
+    });
+
   });
 }

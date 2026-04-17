@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otakukitchen/core/recipe_database.dart';
 import 'package:otakukitchen/core/theme.dart';
 import 'package:otakukitchen/features/recipes/data/sources/database_provider.dart';
-import 'package:otakukitchen/features/recipes/presentation/pages/recipe_details_page.dart';
+import 'package:otakukitchen/features/recipes/presentation/pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +18,7 @@ void main() async {
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        home: const RecipeDetailsPage(recipeId: 9),
+        home: HomePage(),
       ),
     ),
   );

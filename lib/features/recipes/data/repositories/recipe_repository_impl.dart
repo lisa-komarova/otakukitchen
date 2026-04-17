@@ -50,4 +50,18 @@ class RecipeRepositoryImpl extends RecipeRepository {
       sections: RecipeSectionMapper.mapSections(sections, steps),
     );
   }
+
+  @override
+  Future<List<CategoryEntity>> getCategories() async {
+    final categories = await datasource.getCategories();
+    return categories
+        .map(
+          (category) => CategoryEntity(
+            id: category.id,
+            name: category.name,
+            icon: category.icon,
+          ),
+        )
+        .toList();
+  }
 }

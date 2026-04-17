@@ -218,4 +218,44 @@ void main() {
     expect(result.last.title, 'Second Section');
     expect(result.first.steps.first.stepNumber, 1);
   });
+
+  group('getCategories', () {
+    final tCategoryModels = [
+      Category(id: 1, name: 'Main', icon: '🍜'),
+      Category(id: 2, name: 'Desserts', icon: '🍰'),
+    ];
+
+    test(
+      'should return list of CategoryEntity when call is successful',
+      () async {
+        // arrange
+        when(
+          () => mockDataSource.getCategories(),
+        ).thenAnswer((_) async => tCategoryModels);
+
+        // act
+        final result = await repository.getCategories();
+
+        // assert
+        expect(result.length, 2);
+        expect(result[0].id, 1);
+        expect(result[0].name, 'Main');
+        expect(result[1].icon, '🍰');
+        verify(() => mockDataSource.getCategories()).called(1);
+      },
+    );
+
+    test('should throw exception when datasource fails', () async {
+      // arrange
+      when(() => mockDataSource.getCategories()).thenThrow(Exception());
+
+      // act
+      final call = repository.getCategories;
+
+      // assert
+      expect(() => call(), throwsA(isA<Exception>()));
+      verify(() => mockDataSource.getCategories()).called(1);
+    });
+  });
+
 }

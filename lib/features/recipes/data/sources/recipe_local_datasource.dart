@@ -10,7 +10,7 @@ import 'package:sqflite/sqflite.dart';
 abstract class RecipeLocalDataSource {
   Future<Recipe> getRecipeById(int id);
   Future<Category> getCategory(int id);
-
+  Future<List<Category>> getCategories();
   Future<List<Anime>> getAnimesByRecipe(int recipeId);
 
   Future<List<IngredientGroup>> getIngredientGroups(int recipeId);
@@ -123,5 +123,11 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
     );
 
     return maps.map((m) => Step.fromMap(m)).toList();
+  }
+
+  @override
+  Future<List<Category>> getCategories() async {
+    final maps = await db.query('categories');
+    return maps.map((m) => Category.fromMap(m)).toList();
   }
 }
