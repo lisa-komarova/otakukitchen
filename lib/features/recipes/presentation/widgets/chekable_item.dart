@@ -29,7 +29,7 @@ class CheckableItem extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               width: 20,
@@ -40,7 +40,7 @@ class CheckableItem extends ConsumerWidget {
                 color: isChecked ? Color(0xFF301659) : color,
               ),
             ),
-            SizedBox(width: 5),
+            SizedBox(width: 8),
             Expanded(
               child: Text(
                 text,

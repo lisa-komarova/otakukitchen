@@ -98,19 +98,79 @@ class AppTheme {
       iconTheme: IconThemeData(color: AppColors.textPrimary),
 
       textTheme: TextTheme(
-        
         headlineLarge: GoogleFonts.pangolin().copyWith(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.bold,
+          fontSize: 32,
         ),
         headlineMedium: GoogleFonts.pangolin().copyWith(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,
+          fontSize: 28,
         ),
+        headlineSmall: GoogleFonts.pangolin().copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w600,
+          fontSize: 24,
+        ),
+
+        displayLarge: GoogleFonts.pangolin().copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.bold,
+        ),
+        displayMedium: GoogleFonts.pangolin().copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.bold,
+        ),
+        displaySmall: GoogleFonts.pangolin().copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.bold,
+        ),
+
+        titleLarge: GoogleFonts.rubik().copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w600,
+          fontSize: 22,
+        ),
+        titleMedium: GoogleFonts.rubik().copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+        ),
+        titleSmall: GoogleFonts.rubik().copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+        ),
+
         bodyLarge: GoogleFonts.rubik().copyWith(
-          color: AppColors.textPrimary),
+          color: AppColors.textPrimary,
+          fontSize: 16,
+        ),
         bodyMedium: GoogleFonts.rubik().copyWith(
-          color: AppColors.textSecondary),
+          color: AppColors.textSecondary,
+          fontSize: 14,
+        ),
+        bodySmall: GoogleFonts.rubik().copyWith(
+          color: AppColors.textSecondary,
+          fontSize: 12,
+        ),
+
+        labelLarge: GoogleFonts.rubik().copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+        ),
+        labelMedium: GoogleFonts.rubik().copyWith(
+          color: AppColors.textSecondary,
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+        ),
+        labelSmall: GoogleFonts.rubik().copyWith(
+          color: AppColors.textSecondary,
+          fontWeight: FontWeight.w400,
+          fontSize: 11,
+        ),
       ),
 
       inputDecorationTheme: InputDecorationTheme(
@@ -125,6 +185,7 @@ class AppTheme {
       ),
     );
   }
+
   static ThemeData get darkTheme {
     final base = ThemeData(
       fontFamily: GoogleFonts.pangolin().fontFamily,
@@ -199,16 +260,40 @@ class AppTheme {
       iconTheme: IconThemeData(color: Colors.white),
 
       textTheme: TextTheme(
-        headlineLarge: GoogleFonts.pangolin().copyWith(
+        headlineLarge: GoogleFonts.pangolin(
           color: Colors.white,
           fontWeight: FontWeight.bold,
         ),
-        headlineMedium: GoogleFonts.pangolin().copyWith(
+        headlineMedium: GoogleFonts.pangolin(
           color: Colors.white,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: GoogleFonts.rubik().copyWith(color: Colors.white),
-        bodyMedium: GoogleFonts.rubik().copyWith(color: Colors.white70),
+        headlineSmall: GoogleFonts.pangolin(
+          color: Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+
+        titleLarge: GoogleFonts.pangolin(color: Colors.white),
+        titleMedium: GoogleFonts.pangolin(
+          color: Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+        titleSmall: GoogleFonts.pangolin(
+          color: Colors.white,
+          letterSpacing: 0.1,
+        ),
+
+        bodyLarge: GoogleFonts.rubik(color: Colors.white),
+        bodyMedium: GoogleFonts.rubik(color: Colors.white70),
+        bodySmall: GoogleFonts.rubik(color: Colors.white60),
+
+        labelLarge: GoogleFonts.rubik(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
+        ),
+        labelMedium: GoogleFonts.rubik(color: Colors.white),
+        labelSmall: GoogleFonts.rubik(color: Colors.white54, fontSize: 10),
       ),
 
       inputDecorationTheme: InputDecorationTheme(

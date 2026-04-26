@@ -64,4 +64,11 @@ class RecipeRepositoryImpl extends RecipeRepository {
         )
         .toList();
   }
+
+  @override
+  Future<List<RecipeEntity>> getRecipesByCategory(String category) async {
+    final recipes = await datasource.getRecipesByCategory(category);
+
+    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otakukitchen/core/theme.dart';
@@ -5,16 +6,26 @@ import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart
 import 'package:otakukitchen/features/recipes/presentation/providers/checked_items_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/recipe_details_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/widgets/chekable_item.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class RecipeDetailsPage extends ConsumerWidget {
+class RecipeDetailsPage extends ConsumerStatefulWidget {
   final int recipeId;
   const RecipeDetailsPage({super.key, required this.recipeId});
+  @override
+  ConsumerState<RecipeDetailsPage> createState() => _RecipeDetailsPageState();
+}
+
+class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
+  bool isIngredientExpanded = true;
+  bool isPreparationExpanded = true;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final recipeAsync = ref.watch(recipeDetailsProvider(recipeId));
+  Widget build(BuildContext context) {
+    final recipeAsync = ref.watch(recipeDetailsProvider(widget.recipeId));
     bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
+    const defaultTiktokLink = 'https://www.tiktok.com/@otakukitchen';
+    const defaultTelegramLink = 'https://t.me/otakukitchen';
     return SafeArea(
       top: false,
       child: Scaffold(
@@ -22,6 +33,7 @@ class RecipeDetailsPage extends ConsumerWidget {
         backgroundColor: isDarkMode
             ? AppColors.primaryColor
             : AppColors.background,
+
         body: recipeAsync.when(
           loading: () => const Center(
             child: CircularProgressIndicator(color: Colors.white),
@@ -32,28 +44,53 @@ class RecipeDetailsPage extends ConsumerWidget {
               Expanded(
                 child: CustomScrollView(
                   slivers: [
-                    _buildHeader(recipe, context),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isDarkMode
-                                ? AppColors.secondary
-                                : AppColors.surface,
-                            borderRadius: BorderRadius.all(Radius.circular(40)),
-                          ),
-                          child: Column(
-                            children: [
-                              _buildIngredients(recipe, context),
-                              _buildPreparation(recipe, context),
-                              _buildSocialAndAction(context, ref),
-                            ],
+                    SliverAppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      leading: IconButton(
+                        icon: Image.asset(
+                          'assets/icons/arrow_back.png',
+                          width: 35,
+                          height: 35,
+                          color: isDarkMode
+                              ? AppColors.surface
+                              : AppColors.primaryColor,
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                      iconTheme: IconThemeData(
+                        color: isDarkMode
+                            ? AppColors.surface
+                            : AppColors.primaryColor,
+                      ),
+                      actions: [
+                        IconButton(
+                          icon: Icon(Icons.tiktok, size: 30),
+                          onPressed: () => _openTikTok(
+                            recipe.tiktokUrl ?? defaultTiktokLink,
                           ),
                         ),
+                        IconButton(
+                          onPressed: () => _openTelegram(
+                            recipe.telegramUrl ?? defaultTelegramLink,
+                          ),
+                          icon: Icon(Icons.telegram, size: 30),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.favorite_border, size: 30),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ),
+                    _buildHeader(recipe, context),
+                    SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          _buildIngredients(recipe, context),
+                          _buildPreparation(recipe, context),
+                        ],
                       ),
                     ),
-                    SliverToBoxAdapter(child: SizedBox(height: 75)),
                   ],
                 ),
               ),
@@ -76,7 +113,7 @@ class RecipeDetailsPage extends ConsumerWidget {
     if (recipe.level == 'medium') iconCount = 2;
     if (recipe.level == 'hard') iconCount = 3;
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(24, 60, 24, 20),
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
       sliver: SliverToBoxAdapter(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +150,7 @@ class RecipeDetailsPage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      recipe.cookingTime,
+                      '${recipe.cookingTime} мин',
                       style: Theme.of(
                         context,
                       ).textTheme.bodyLarge!.copyWith(fontSize: 18),
@@ -153,12 +190,20 @@ class RecipeDetailsPage extends ConsumerWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(28),
-                child: Image.network(
-                  recipe.imageUrl,
+                child: CachedNetworkImage(
+                  imageUrl: recipe.imageUrl,
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
+                  placeholder: (context, url) => Container(
+                    height: 200,
+                    width: double.infinity,
+                    color: Colors.white10,
+                    child: const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
                     height: 200,
                     width: double.infinity,
                     color: Colors.white24,
@@ -180,43 +225,100 @@ class RecipeDetailsPage extends ConsumerWidget {
   Widget _buildIngredients(RecipeEntity recipe, BuildContext context) {
     bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.all(24),
-      child: Column(
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Text(
-            'ингредиенты',
-            style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+          GestureDetector(
+            onTap: () {
+              setState(() => isIngredientExpanded = !isIngredientExpanded);
+            },
+            child: AnimatedContainer(
+              width: double.infinity,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              decoration: BoxDecoration(
+                color: isDarkMode ? AppColors.secondary : AppColors.surface,
+                borderRadius: const BorderRadius.all(Radius.circular(40)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'ингредиенты',
+                      style: Theme.of(context).textTheme.headlineLarge!
+                          .copyWith(fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
+
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      child: isIngredientExpanded
+                          ? Column(
+                              children: recipe.ingredientGroups.map((group) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (group.title.isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 16,
+                                          bottom: 8,
+                                        ),
+                                        child: Text(
+                                          group.title,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontStyle: FontStyle.italic,
+                                            color: AppColors.primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ...group.ingredients.map(
+                                      (ing) => CheckableItem(
+                                        id: 'group_${group.title}_ing_${ing.id}_${ing.name}',
+                                        text: '${ing.name} — ${ing.amount}',
+                                        color: isDarkMode
+                                            ? AppColors.secondary
+                                            : AppColors.surface,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
 
-          ...recipe.ingredientGroups.map(
-            (group) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (group.title.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16, bottom: 8),
-                    child: Text(
-                      group.title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontStyle: FontStyle.italic,
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                  ),
-
-                ...group.ingredients.map(
-                  (ing) => CheckableItem(
-                    id: 'group_${group.title}_ing_${ing.id}_${ing.name}',
-                    text: '${ing.name} — ${ing.amount}',
-                    color: isDarkMode ? AppColors.secondary : AppColors.surface,
-                  ),
-                ),
-              ],
+          Positioned(
+            top: -5,
+            right: -5,
+            child: Image.asset(
+              'assets/icons/star_filled.png',
+              color: isDarkMode ? AppColors.surface : AppColors.primaryColor,
+              width: 35,
+              height: 35,
+            ),
+          ),
+          Positioned(
+            bottom: -5,
+            left: -5,
+            child: Image.asset(
+              'assets/icons/star_filled.png',
+              color: isDarkMode ? AppColors.surface : AppColors.primaryColor,
+              width: 35,
+              height: 35,
             ),
           ),
         ],
@@ -227,115 +329,181 @@ class RecipeDetailsPage extends ConsumerWidget {
   Widget _buildPreparation(RecipeEntity recipe, BuildContext context) {
     bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
-    return Column(
-      children: [
-        Text(
-          'приготовление',
-          style: Theme.of(context).textTheme.headlineLarge!.copyWith(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 20),
 
-        ...recipe.sections.map((section) {
-          final sectionIndex = recipe.sections.indexOf(section) + 1;
-
-          return Container(
-            width: double.infinity,
-            margin: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: isDarkMode ? AppColors.cardColor : Colors.white,
-              borderRadius: BorderRadius.circular(32),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$sectionIndex. ${section.title}:',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontStyle: FontStyle.italic,
-                    color: AppColors.primaryColor,
-                  ),
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          GestureDetector(
+            onTap: () =>
+                setState(() => isPreparationExpanded = !isPreparationExpanded),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: isDarkMode ? AppColors.secondary : AppColors.surface,
+                borderRadius: const BorderRadius.all(Radius.circular(40)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5,
+                  vertical: 10,
                 ),
-                const SizedBox(height: 12),
-                ...section.steps.map(
-                  (step) => CheckableItem(
-                    id: 'step_${section.title}_${step.stepNumber}',
-                    text: step.description,
-                    textColor: isDarkMode ? AppColors.textPrimary : null,
-                    color: isDarkMode ? AppColors.cardColor : Colors.white,
-                  ),
-                ),
-                if (recipe.sections.last == section)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 19,
+                        vertical: 10,
+                      ),
                       child: Text(
-                        'Приятного аппетита!',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          color: AppColors.primaryColor,
-                        ),
+                        'приготовление',
+                        style: Theme.of(context).textTheme.headlineLarge!
+                            .copyWith(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-          );
-        }),
-      ],
-    );
-  }
 
-  Widget _buildSocialAndAction(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-      child: Column(
-        children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Icon(
-                Icons.tiktok,
-                color: AppColors.primaryColor,
-                size: 30,
-              ), // Replace with SVG if needed
-              Icon(Icons.telegram, color: AppColors.primaryColor, size: 30),
-              Icon(
-                Icons.favorite_border,
-                color: AppColors.primaryColor,
-                size: 30,
-              ),
-            ],
-          ),
-          const SizedBox(height: 30),
-          SizedBox(
-            width: double.infinity,
-            height: 60,
-            child: ElevatedButton(
-              onPressed: () => _showResetDialog(context, ref),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      alignment: Alignment.topCenter,
+                      child: isPreparationExpanded
+                          ? Column(
+                              children: [
+                                const SizedBox(height: 20),
+                                ...recipe.sections.map((section) {
+                                  final sectionIndex =
+                                      recipe.sections.indexOf(section) + 1;
+                                  return Container(
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.only(
+                                      bottom: 20,
+                                      left: 20,
+                                      right: 20,
+                                    ),
+                                    padding: const EdgeInsets.all(24),
+                                    decoration: BoxDecoration(
+                                      color: isDarkMode
+                                          ? AppColors.cardColor
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(32),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '$sectionIndex. ${section.title}:',
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontStyle: FontStyle.italic,
+                                            color: AppColors.primaryColor,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        ...section.steps.map(
+                                          (step) => CheckableItem(
+                                            id: 'step_${section.title}_${step.stepNumber}',
+                                            text: step.description,
+                                            textColor: isDarkMode
+                                                ? AppColors.textPrimary
+                                                : null,
+                                            color: isDarkMode
+                                                ? AppColors.cardColor
+                                                : Colors.white,
+                                          ),
+                                        ),
+                                        if (recipe.sections.last == section)
+                                          const Center(
+                                            child: Padding(
+                                              padding: EdgeInsets.only(top: 16),
+                                              child: Text(
+                                                'Приятного аппетита!',
+                                                style: TextStyle(
+                                                  fontStyle: FontStyle.italic,
+                                                  color: AppColors.primaryColor,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0,
+                                  ),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    height: 60,
+                                    child: ElevatedButton(
+                                      onPressed: () =>
+                                          _showResetDialog(context, ref),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primaryColor,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            30,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'приготовлено',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium!
+                                            .copyWith(
+                                              color: isDarkMode
+                                                  ? AppColors.cardColor
+                                                  : Colors.white,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
                 ),
               ),
-              child: const Text(
-                'приготовлено',
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
             ),
           ),
-          const SizedBox(height: 20),
+
+          Positioned(
+            top: -5,
+            right: -5,
+            child: Image.asset(
+              'assets/icons/star_filled.png',
+              color: isDarkMode ? AppColors.surface : AppColors.primaryColor,
+              width: 35,
+              height: 35,
+            ),
+          ),
+          Positioned(
+            bottom: -5,
+            left: -5,
+            child: Image.asset(
+              'assets/icons/star_filled.png',
+              color: isDarkMode ? AppColors.surface : AppColors.primaryColor,
+              width: 35,
+              height: 35,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  
   void _showResetDialog(BuildContext context, WidgetRef ref) {
     bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
@@ -350,7 +518,9 @@ class RecipeDetailsPage extends ConsumerWidget {
         ),
         content: Text(
           'При нажатии "приготовлено" все ингредиенты и шаги будут сброшены',
-          style: TextStyle(color: isDarkMode ? AppColors.secondary : null),
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: isDarkMode ? AppColors.secondary : null,
+          ),
         ),
         actions: [
           TextButton(
@@ -362,9 +532,9 @@ class RecipeDetailsPage extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(8), // Скругление углов
               ),
             ),
-            child: const Text(
+            child: Text(
               'ОТМЕНА',
-              style: TextStyle(
+              style: Theme.of(context).textTheme.labelMedium!.copyWith(
                 color: Color(0xFF301659),
                 fontWeight: FontWeight.bold,
               ),
@@ -388,9 +558,9 @@ class RecipeDetailsPage extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: const Text(
+            child: Text(
               'ПОДТВЕРДИТЬ',
-              style: TextStyle(
+              style: Theme.of(context).textTheme.labelMedium!.copyWith(
                 color: AppColors.accent,
                 fontWeight: FontWeight.bold,
               ),
@@ -399,5 +569,20 @@ class RecipeDetailsPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _openTikTok(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
+  Future<void> _openTelegram(String url) async {
+    final Uri uri = Uri.parse(url);
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
   }
 }

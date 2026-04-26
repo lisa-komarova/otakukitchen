@@ -9,6 +9,7 @@ import 'package:sqflite/sqflite.dart';
 
 abstract class RecipeLocalDataSource {
   Future<Recipe> getRecipeById(int id);
+  Future<List<Recipe>> getRecipesByCategory(String category);
   Future<Category> getCategory(int id);
   Future<List<Category>> getCategories();
   Future<List<Anime>> getAnimesByRecipe(int recipeId);
@@ -130,4 +131,19 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
     final maps = await db.query('categories');
     return maps.map((m) => Category.fromMap(m)).toList();
   }
+  
+    @override
+  Future<List<Recipe>> getRecipesByCategory(String category) async {
+    final maps = await db.rawQuery(
+      '''
+      SELECT r.* FROM recipes r
+      INNER JOIN categories c ON r.category_id = c.id
+      WHERE c.name = ?
+      ''',
+      [category],
+    );
+
+    return maps.map((m) => Recipe.fromMap(m)).toList();
+  }
+
 }

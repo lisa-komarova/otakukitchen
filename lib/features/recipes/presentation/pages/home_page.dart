@@ -25,64 +25,81 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  Widget _buildBottomNavBar(BuildContext context) {
-  bool isDarkMode = MediaQuery.of(context).platformBrightness == Brightness.dark;
 
-  return Container(
-    decoration: BoxDecoration(
-      color: isDarkMode ? AppColors.secondary : AppColors.surface,
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(20),
-        topRight: Radius.circular(20),
-      ),
-      border: Border(
-        top: BorderSide(
-          color: isDarkMode ? AppColors.primaryColor : AppColors.background,
-          width: 5,
+  Widget _buildBottomNavBar(BuildContext context) {
+    bool isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDarkMode ? AppColors.secondary : AppColors.surface,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+        border: Border(
+          top: BorderSide(
+            color: isDarkMode ? AppColors.primaryColor : AppColors.background,
+            width: 5,
+          ),
         ),
       ),
-    ),
-    child: NavigationBarTheme(
-      data: NavigationBarThemeData(
-        backgroundColor: Colors.transparent, 
-        indicatorColor: Colors.transparent, 
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysHide, 
+      child: NavigationBarTheme(
+        data: NavigationBarThemeData(
+          backgroundColor: Colors.transparent,
+          indicatorColor: Colors.transparent,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        ),
+        child: NavigationBar(
+          height: 70,
+          elevation: 0,
+          selectedIndex: currentPageIndex,
+          onDestinationSelected: (int index) {
+            setState(() {
+              currentPageIndex = index;
+            });
+          },
+          destinations: [
+            _buildNavDest(
+              'assets/icons/menu.png',
+              'assets/icons/menu.png',
+              isDarkMode,
+            ),
+            _buildNavDest(
+              'assets/icons/search.png',
+              'assets/icons/search.png',
+              isDarkMode,
+            ),
+            _buildNavDest(
+              'assets/icons/favourite.png',
+              'assets/icons/favourite.png',
+              isDarkMode,
+            ),
+          ],
+        ),
       ),
-      child: NavigationBar(
-        height: 70, 
-        elevation: 0,
-        selectedIndex: currentPageIndex,
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
-        },
-        destinations: [
-          _buildNavDest('assets/icons/menu.png', 'assets/icons/menu.png'),
-          _buildNavDest('assets/icons/search.png', 'assets/icons/search.png'),
-          _buildNavDest('assets/icons/favourite.png', 'assets/icons/favourite.png'),
-        ],
+    );
+  }
+
+  NavigationDestination _buildNavDest(
+    String selectedPath,
+    String idlePath,
+    bool isDarkMode,
+  ) {
+    return NavigationDestination(
+      label: '',
+      selectedIcon: Image.asset(
+        selectedPath,
+        width: 45,
+        height: 45,
+        color: AppColors.primaryColor,
       ),
-    ),
-  );
-}
-
-NavigationDestination _buildNavDest(String selectedPath, String idlePath) {
-  return NavigationDestination(
-    label: '',
-    selectedIcon: Image.asset(
-      selectedPath,
-      width: 45, 
-      height: 45,
-      color: AppColors.primaryColor,
-    ),
-    icon: Image.asset(
-      idlePath,
-      width: 45,
-      height: 45,
-      color: AppColors.secondary,
-    ),
-  );
-}
-
+      icon: Image.asset(
+        idlePath,
+        width: 45,
+        height: 45,
+        color: isDarkMode ? AppColors.surface : AppColors.secondary,
+      ),
+    );
+  }
 }
