@@ -48,12 +48,16 @@ void main() {
   });
 
   test('should throw exception when repository fails', () async {
-    // arrange
-    when(
-      () => mockRepository.getRecipeDetails(recipeId),
-    ).thenThrow(Exception());
+  // arrange
+  when(() => mockRepository.getRecipeDetails(recipeId))
+      .thenAnswer((_) async => throw Exception('Repository error'));
 
-    // act & assert
-    expect(() => useCase(recipeId), throwsA(isA<Exception>()));
-  });
+  // act
+  final call = useCase(recipeId);
+
+  // assert
+  expect(() => call, throwsA(isA<Exception>()));
+});
+
+
 }

@@ -76,9 +76,30 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                           ),
                           icon: Icon(Icons.telegram, size: 30),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.favorite_border, size: 30),
-                          onPressed: () {},
+                        recipeAsync.when(
+                          data: (recipe) => IconButton(
+                            icon: Image.asset(
+                              recipe.isFavourite
+                                  ? 'assets/icons/favourite_filled.png'
+                                  : 'assets/icons/favourite.png',
+                              width: 35,
+                              height: 35,
+                              color: isDarkMode
+                                  ? AppColors.surface
+                                  : AppColors.primaryColor,
+                            ),
+                            onPressed: () {
+                             ref
+                                  .read(
+                                    recipeDetailsProvider(
+                                      widget.recipeId,
+                                    ).notifier,
+                                  )
+                                  .toggleFavorite();
+                            },
+                          ),
+                          loading: () => CircularProgressIndicator(),
+                          error: (err, stack) => Text('Error'),
                         ),
                       ],
                     ),
@@ -526,10 +547,10 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             style: TextButton.styleFrom(
-              backgroundColor: AppColors.secondary, // Светло-фиолетовый фон
+              backgroundColor: AppColors.secondary, 
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8), // Скругление углов
+                borderRadius: BorderRadius.circular(8), 
               ),
             ),
             child: Text(

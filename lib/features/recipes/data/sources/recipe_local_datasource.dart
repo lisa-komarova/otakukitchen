@@ -8,9 +8,9 @@ import 'package:otakukitchen/features/recipes/data/models/step.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class RecipeLocalDataSource {
-  Future<Recipe> getRecipeById(int id);
+  Future<Recipe> getRecipeById(int recipeId);
   Future<List<Recipe>> getRecipesByCategory(String category);
-  Future<Category> getCategory(int id);
+  Future<Category> getCategory(int categoryId);
   Future<List<Category>> getCategories();
   Future<List<Anime>> getAnimesByRecipe(int recipeId);
 
@@ -19,6 +19,7 @@ abstract class RecipeLocalDataSource {
 
   Future<List<RecipeSection>> getRecipeSections(int recipeId);
   Future<List<Step>> getSteps(int recipeId);
+  Future<void> updateRecipeFavouriteStatus(bool isFavourite, int recipeId);
 }
 
 class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
@@ -131,8 +132,8 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
     final maps = await db.query('categories');
     return maps.map((m) => Category.fromMap(m)).toList();
   }
-  
-    @override
+
+  @override
   Future<List<Recipe>> getRecipesByCategory(String category) async {
     final maps = await db.rawQuery(
       '''
@@ -146,4 +147,16 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
     return maps.map((m) => Recipe.fromMap(m)).toList();
   }
 
+  @override
+  Future<void> updateRecipeFavouriteStatus(
+    bool isFavourite,
+    int recipeId,
+  ) async {
+    await db.update(
+      'recipes',
+      {'is_favourite': isFavourite ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [recipeId],
+    );
+  }
 }

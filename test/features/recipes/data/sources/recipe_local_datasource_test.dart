@@ -37,12 +37,10 @@ void main() {
         'is_favourite': 1,
       };
 
-      when(() => mockDb.query(
-            'recipes',
-            where: 'id = ?',
-            whereArgs: [1],
-            limit: 1,
-          )).thenAnswer((_) async => [map]);
+      when(
+        () =>
+            mockDb.query('recipes', where: 'id = ?', whereArgs: [1], limit: 1),
+      ).thenAnswer((_) async => [map]);
 
       final result = await dataSource.getRecipeById(1);
 
@@ -53,12 +51,10 @@ void main() {
     });
 
     test('getRecipeById throws Exception when not found', () async {
-      when(() => mockDb.query(
-            'recipes',
-            where: 'id = ?',
-            whereArgs: [99],
-            limit: 1,
-          )).thenAnswer((_) async => []);
+      when(
+        () =>
+            mockDb.query('recipes', where: 'id = ?', whereArgs: [99], limit: 1),
+      ).thenAnswer((_) async => []);
 
       expect(() => dataSource.getRecipeById(99), throwsException);
     });
@@ -66,12 +62,14 @@ void main() {
     test('getCategory returns Category when found', () async {
       final map = {'id': 1, 'name': 'Dessert', 'icon': 'cake'};
 
-      when(() => mockDb.query(
-            'categories',
-            where: 'id = ?',
-            whereArgs: [1],
-            limit: 1,
-          )).thenAnswer((_) async => [map]);
+      when(
+        () => mockDb.query(
+          'categories',
+          where: 'id = ?',
+          whereArgs: [1],
+          limit: 1,
+        ),
+      ).thenAnswer((_) async => [map]);
 
       final result = await dataSource.getCategory(1);
 
@@ -81,20 +79,32 @@ void main() {
     });
 
     test('getCategory throws Exception when not found', () async {
-      when(() => mockDb.query(
-            'categories',
-            where: 'id = ?',
-            whereArgs: [99],
-            limit: 1,
-          )).thenAnswer((_) async => []);
+      when(
+        () => mockDb.query(
+          'categories',
+          where: 'id = ?',
+          whereArgs: [99],
+          limit: 1,
+        ),
+      ).thenAnswer((_) async => []);
 
       expect(() => dataSource.getCategory(99), throwsException);
     });
 
     test('getAnimesByRecipe returns list of Anime', () async {
       final maps = [
-        {'id': 1, 'title': 'Naruto', 'scene_description': null, 'episode': null},
-        {'id': 2, 'title': 'One Piece', 'scene_description': null, 'episode': null},
+        {
+          'id': 1,
+          'title': 'Naruto',
+          'scene_description': null,
+          'episode': null,
+        },
+        {
+          'id': 2,
+          'title': 'One Piece',
+          'scene_description': null,
+          'episode': null,
+        },
       ];
 
       when(() => mockDb.rawQuery(any(), any())).thenAnswer((_) async => maps);
@@ -112,12 +122,14 @@ void main() {
         {'id': 2, 'recipe_id': 1, 'title': 'Extra', 'order_index': 1},
       ];
 
-      when(() => mockDb.query(
-            'ingredient_groups',
-            where: any(named: 'where'),
-            whereArgs: any(named: 'whereArgs'),
-            orderBy: any(named: 'orderBy'),
-          )).thenAnswer((_) async => maps);
+      when(
+        () => mockDb.query(
+          'ingredient_groups',
+          where: any(named: 'where'),
+          whereArgs: any(named: 'whereArgs'),
+          orderBy: any(named: 'orderBy'),
+        ),
+      ).thenAnswer((_) async => maps);
 
       final result = await dataSource.getIngredientGroups(1);
 
@@ -152,12 +164,14 @@ void main() {
         {'id': 2, 'recipe_id': 1, 'title': 'Cook', 'order_index': 1},
       ];
 
-      when(() => mockDb.query(
-            'recipe_sections',
-            where: any(named: 'where'),
-            whereArgs: any(named: 'whereArgs'),
-            orderBy: any(named: 'orderBy'),
-          )).thenAnswer((_) async => maps);
+      when(
+        () => mockDb.query(
+          'recipe_sections',
+          where: any(named: 'where'),
+          whereArgs: any(named: 'whereArgs'),
+          orderBy: any(named: 'orderBy'),
+        ),
+      ).thenAnswer((_) async => maps);
 
       final result = await dataSource.getRecipeSections(1);
 
@@ -179,7 +193,7 @@ void main() {
       expect(result.length, 2);
     });
 
-        test('getCategories returns list of Category from database', () async {
+    test('getCategories returns list of Category from database', () async {
       // arrange
       final maps = [
         {'id': 1, 'name': 'Main', 'icon': '🍜'},
@@ -199,5 +213,87 @@ void main() {
       verify(() => mockDb.query('categories')).called(1);
     });
 
+    group('getRecipesByCategory', () {
+      const tCategory = 'Супы';
+
+      final tRecipesRaw = [
+        {
+          'id': 1,
+          'name': 'Рамен',
+          'cookingTime': '30 мин',
+          'level': 'easy',
+          'imageUrl': 'url',
+          'is_favourite': 1, 
+          'category_id': 10,
+        },
+      ];
+
+      test('should perform a rawQuery and return a list of Recipes', () async {
+        // arrange
+        when(
+          () => mockDb.rawQuery(any(), any()),
+        ).thenAnswer((_) async => tRecipesRaw);
+
+        // act
+        final result = await dataSource.getRecipesByCategory(tCategory);
+
+        // assert
+        verify(
+          () => mockDb.rawQuery(
+            any(),  
+            [tCategory],
+          ),
+        ).called(1);
+
+        expect(result, isA<List<Recipe>>());
+        expect(result.length, 1);
+        expect(result.first.name, 'Рамен');
+        expect(
+          result.first.isFavourite,
+          true,
+        );  
+      });
+
+      test('should throw an exception when database execution fails', () async {
+        // arrange
+        when(
+          () => mockDb.rawQuery(any(), any()),
+        ).thenThrow(Exception('DB Error'));
+
+        // act
+        final call = dataSource.getRecipesByCategory(tCategory);
+
+        // assert
+        expect(() => call, throwsA(isA<Exception>()));
+      });
+    });
+
+    test('should call update on database with correct values', () async {
+      // Arrange
+      const tId = 1;
+      const tIsFavourite = true;
+
+      when(
+        () => mockDb.update(
+          any(),
+          any(),
+          where: any(named: 'where'),
+          whereArgs: any(named: 'whereArgs'),
+        ),
+      ).thenAnswer((_) async => 1);
+
+      // Act
+      await dataSource.updateRecipeFavouriteStatus(tIsFavourite, tId);
+
+      // Assert
+      verify(
+        () => mockDb.update(
+          'recipes',
+          {'isFavourite': 1},
+          where: 'id = ?',
+          whereArgs: [tId],
+        ),
+      ).called(1);
+    });
   });
 }

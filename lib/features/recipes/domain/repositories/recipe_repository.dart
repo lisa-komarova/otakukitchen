@@ -5,4 +5,5 @@ abstract class RecipeRepository {
   Future<RecipeEntity> getRecipeDetails(int id);
   Future<List<CategoryEntity>> getCategories();
   Future<List<RecipeEntity>> getRecipesByCategory(String category);
+  Future<void> updateRecipeFavouriteStatus(bool isFavourite, int recipeId);
 }

@@ -257,5 +257,121 @@ void main() {
       verify(() => mockDataSource.getCategories()).called(1);
     });
   });
+   group('getRecipesByCategory', () {
+    const tCategory = 'Main';
+
+    // 1. Подготавливаем "легкие" модели из датасорса
+    final tRecipeModels = [
+      Recipe(
+        id: 1,
+        name: 'Ramen',
+        cookingTime: '30m',
+        level: 'easy',
+        categoryId: 1,
+        imageUrl: '',
+        isFavourite: false,
+      ),
+      Recipe(
+        id: 2,
+        name: 'Sushi',
+        cookingTime: '40m',
+        level: 'hard',
+        categoryId: 1,
+        imageUrl: '',
+        isFavourite: false,
+      ),
+    ];
+
+    test('should fetch recipes and then fetch details for each recipe', () async {
+      // arrange
+      // Когда запрашиваем список по категории, возвращаем две модели
+      when(
+        () => mockDataSource.getRecipesByCategory(tCategory),
+      ).thenAnswer((_) async => tRecipeModels);
+
+      // Так как метод вызывает getRecipeDetails(id), нам нужно "замокать" все внутренние вызовы
+      // датасорса, которые нужны для сборки деталей (категории, ингредиенты и т.д.)
+      // Для простоты здесь настроим только ID и категорию
+      when(() => mockDataSource.getRecipeById(any())).thenAnswer((
+        invocation,
+      ) async {
+        final id = invocation.positionalArguments[0] as int;
+        return tRecipeModels.firstWhere((r) => r.id == id);
+      });
+
+      // Заглушки для остальных вызовов внутри getRecipeDetails
+      when(
+        () => mockDataSource.getCategory(any()),
+      ).thenAnswer((_) async => Category(id: 1, name: 'Main', icon: ''));
+      when(
+        () => mockDataSource.getAnimesByRecipe(any()),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockDataSource.getIngredientGroups(any()),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockDataSource.getIngredientsInRecipe(any()),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockDataSource.getRecipeSections(any()),
+      ).thenAnswer((_) async => []);
+      when(() => mockDataSource.getSteps(any())).thenAnswer((_) async => []);
+
+      // act
+      final result = await repository.getRecipesByCategory(tCategory);
+
+      // assert
+      expect(result.length, 2);
+      expect(result[0].id, 1);
+      expect(result[1].id, 2);
+
+      // Проверяем, что датасорс был опрошен для каждого рецепта
+      verify(() => mockDataSource.getRecipesByCategory(tCategory)).called(1);
+      verify(() => mockDataSource.getRecipeById(1)).called(1);
+      verify(() => mockDataSource.getRecipeById(2)).called(1);
+    });
+  });
+  group('updateRecipeFavouriteStatus', () {
+    const tRecipeId = 1;
+    const tIsFavourite = true;
+
+    test(
+      'should call dataSource.updateRecipeFavouriteStatus with correct parameters',
+      () async {
+        // arrange
+        when(
+          () => mockDataSource.updateRecipeFavouriteStatus(any(), any()),
+        ).thenAnswer((_) async => Future.value());
+
+        // act
+        await repository.updateRecipeFavouriteStatus(tIsFavourite, tRecipeId);
+
+        // assert
+        verify(
+          () => mockDataSource.updateRecipeFavouriteStatus(
+            tIsFavourite,
+            tRecipeId,
+          ),
+        ).called(1);
+      },
+    );
+
+    test('should throw exception when dataSource fails', () async {
+      // arrange
+      when(
+        () => mockDataSource.updateRecipeFavouriteStatus(any(), any()),
+      ).thenThrow(Exception('DB Update Error'));
+
+      // act
+      final call = repository.updateRecipeFavouriteStatus;
+
+      // assert
+      expect(() => call(tIsFavourite, tRecipeId), throwsA(isA<Exception>()));
+      verify(
+        () =>
+            mockDataSource.updateRecipeFavouriteStatus(tIsFavourite, tRecipeId),
+      ).called(1);
+    });
+  });
 
 }

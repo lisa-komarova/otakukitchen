@@ -71,4 +71,12 @@ class RecipeRepositoryImpl extends RecipeRepository {
 
     return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
   }
+
+  @override
+  Future<void> updateRecipeFavouriteStatus(
+    bool isFavourite,
+    int recipeId,
+  ) async {
+    await datasource.updateRecipeFavouriteStatus(isFavourite, recipeId);
+  }
 }

@@ -35,4 +35,35 @@ class RecipeEntity {
     required this.ingredientGroups,
     required this.sections,
   });
+  RecipeEntity copyWith({
+    int? id,
+    String? name,
+    String? cookingTime,
+    String? level,
+    String? imageUrl,
+    String? tiktokUrl,
+    String? telegramUrl,
+    bool? isFavourite,
+    String? note,
+    CategoryEntity? category,
+    List<AnimeEntity>? animes,
+    List<IngredientGroupEntity>? ingredientGroups,
+    List<RecipeSectionEntity>? sections,
+  }) {
+    return RecipeEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      cookingTime: cookingTime ?? this.cookingTime,
+      level: level ?? this.level,
+      imageUrl: imageUrl ?? this.imageUrl,
+      tiktokUrl: tiktokUrl ?? this.tiktokUrl,
+      telegramUrl: telegramUrl ?? this.telegramUrl,
+      isFavourite: isFavourite ?? this.isFavourite,
+      note: note ?? this.note,
+      category: category ?? this.category,
+      animes: animes ?? this.animes,
+      ingredientGroups: ingredientGroups ?? this.ingredientGroups,
+      sections: sections ?? this.sections,
+    );
+  }
 }
