@@ -20,6 +20,7 @@ abstract class RecipeLocalDataSource {
   Future<List<RecipeSection>> getRecipeSections(int recipeId);
   Future<List<Step>> getSteps(int recipeId);
   Future<void> updateRecipeFavouriteStatus(bool isFavourite, int recipeId);
+  Future<List<Recipe>> getFavouriteRecipes();
 }
 
 class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
@@ -158,5 +159,14 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
       where: 'id = ?',
       whereArgs: [recipeId],
     );
+  }
+
+  @override
+  Future<List<Recipe>> getFavouriteRecipes() async {
+    final maps = await db.rawQuery('''
+     select * from recipes where is_favourite = 1
+      ''');
+
+    return maps.map((m) => Recipe.fromMap(m)).toList();
   }
 }

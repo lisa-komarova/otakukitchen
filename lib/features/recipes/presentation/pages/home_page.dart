@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:otakukitchen/core/theme.dart';
 import 'package:otakukitchen/features/recipes/presentation/pages/categories_page.dart';
+import 'package:otakukitchen/features/recipes/presentation/pages/favourite_recipes_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
         body: <Widget>[
           const CategoriesPage(),
           const Placeholder(),
-          const Placeholder(),
+          const FavouriteRecipesPage(),
         ][currentPageIndex],
       ),
     );

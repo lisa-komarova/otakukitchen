@@ -223,7 +223,7 @@ void main() {
           'cookingTime': '30 мин',
           'level': 'easy',
           'imageUrl': 'url',
-          'is_favourite': 1, 
+          'is_favourite': 1,
           'category_id': 10,
         },
       ];
@@ -238,20 +238,12 @@ void main() {
         final result = await dataSource.getRecipesByCategory(tCategory);
 
         // assert
-        verify(
-          () => mockDb.rawQuery(
-            any(),  
-            [tCategory],
-          ),
-        ).called(1);
+        verify(() => mockDb.rawQuery(any(), [tCategory])).called(1);
 
         expect(result, isA<List<Recipe>>());
         expect(result.length, 1);
         expect(result.first.name, 'Рамен');
-        expect(
-          result.first.isFavourite,
-          true,
-        );  
+        expect(result.first.isFavourite, true);
       });
 
       test('should throw an exception when database execution fails', () async {
@@ -289,9 +281,9 @@ void main() {
       verify(
         () => mockDb.update(
           'recipes',
-          {'isFavourite': 1},
+          {'is_favourite': 1},
           where: 'id = ?',
-          whereArgs: [tId],
+          whereArgs: any(named: 'whereArgs'),
         ),
       ).called(1);
     });

@@ -21,11 +21,8 @@ class CheckableItem extends ConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        final current = ref.read(checkedItemsProvider);
-        ref.read(checkedItemsProvider.notifier).state = isChecked
-            ? ({...current}..remove(id))
-            : ({...current, id});
-      },
+        ref.read(checkedItemsProvider.notifier).toggle(id);
+      },  
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(

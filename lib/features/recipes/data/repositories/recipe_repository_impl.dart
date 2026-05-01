@@ -79,4 +79,11 @@ class RecipeRepositoryImpl extends RecipeRepository {
   ) async {
     await datasource.updateRecipeFavouriteStatus(isFavourite, recipeId);
   }
+
+  @override
+  Future<List<RecipeEntity>> getFavouriteRecipes() async {
+    final recipes = await datasource.getFavouriteRecipes();
+
+    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+  }
 }

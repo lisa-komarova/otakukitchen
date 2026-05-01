@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,7 +22,9 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final recipeAsync = ref.watch(recipeDetailsProvider(widget.recipeId));
+    final recipeAsync = ref.watch(
+      recipeDetailsControllerProvider(widget.recipeId),
+    );
     bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     const defaultTiktokLink = 'https://www.tiktok.com/@otakukitchen';
@@ -89,9 +92,9 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                                   : AppColors.primaryColor,
                             ),
                             onPressed: () {
-                             ref
+                              ref
                                   .read(
-                                    recipeDetailsProvider(
+                                    recipeDetailsControllerProvider(
                                       widget.recipeId,
                                     ).notifier,
                                   )
@@ -145,28 +148,36 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AutoSizeText(
                         recipe.name,
                         style: Theme.of(
                           context,
                         ).textTheme.headlineLarge!.copyWith(height: 0.8),
                         softWrap: true,
+                        minFontSize: 15,
                         maxLines: 2,
                       ),
-                      Text(
-                        recipe.animes.first.title,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w300,
-                          fontStyle: FontStyle.italic,
-                          fontSize: 18,
-                        ),
 
-                        softWrap: true,
-                        maxLines: 2,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          recipe.animes.first.title,
+                          style: Theme.of(context).textTheme.bodyLarge!
+                              .copyWith(
+                                fontWeight: FontWeight.w300,
+                                fontStyle: FontStyle.italic,
+                                fontSize: 18,
+                                height: 0.8,
+                              ),
+
+                          softWrap: true,
+                          maxLines: 2,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                SizedBox(width: 3),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -252,72 +263,84 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          GestureDetector(
-            onTap: () {
-              setState(() => isIngredientExpanded = !isIngredientExpanded);
-            },
-            child: AnimatedContainer(
-              width: double.infinity,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              decoration: BoxDecoration(
-                color: isDarkMode ? AppColors.secondary : AppColors.surface,
-                borderRadius: const BorderRadius.all(Radius.circular(40)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 20,
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      'ингредиенты',
-                      style: Theme.of(context).textTheme.headlineLarge!
-                          .copyWith(fontSize: 28, fontWeight: FontWeight.bold),
+          AnimatedContainer(
+            width: double.infinity,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: isDarkMode ? AppColors.secondary : AppColors.surface,
+              borderRadius: const BorderRadius.all(Radius.circular(40)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(
+                        () => isIngredientExpanded = !isIngredientExpanded,
+                      );
+                    },
+                    behavior: HitTestBehavior.opaque,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Center(
+                        child: Text(
+                          'ингредиенты',
+                          style: Theme.of(context).textTheme.headlineLarge!
+                              .copyWith(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ),
                     ),
+                  ),
 
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      child: isIngredientExpanded
-                          ? Column(
-                              children: recipe.ingredientGroups.map((group) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (group.title.isNotEmpty)
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 16,
-                                          bottom: 8,
-                                        ),
-                                        child: Text(
-                                          group.title,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontStyle: FontStyle.italic,
-                                            color: AppColors.primaryColor,
-                                          ),
-                                        ),
-                                      ),
-                                    ...group.ingredients.map(
-                                      (ing) => CheckableItem(
-                                        id: 'group_${group.title}_ing_${ing.id}_${ing.name}',
-                                        text: '${ing.name} — ${ing.amount}',
-                                        color: isDarkMode
-                                            ? AppColors.secondary
-                                            : AppColors.surface,
-                                      ),
+                  AnimatedCrossFade(
+                    duration: const Duration(milliseconds: 300),
+                    sizeCurve: Curves.easeInOut,
+                    crossFadeState: isIngredientExpanded
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    firstChild: const SizedBox(width: double.infinity),
+                    secondChild: Column(
+                      children: [
+                        ...recipe.ingredientGroups.map((group) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (group.title.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 16,
+                                    bottom: 8,
+                                  ),
+                                  child: Text(
+                                    group.title,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontStyle: FontStyle.italic,
+                                      color: AppColors.primaryColor,
                                     ),
-                                  ],
-                                );
-                              }).toList(),
-                            )
-                          : const SizedBox.shrink(),
+                                  ),
+                                ),
+                              ...group.ingredients.map(
+                                (ing) => CheckableItem(
+                                  id: 'group_${group.title}_ing_${ing.id}_${ing.name}',
+                                  text: '${ing.name} — ${ing.amount}',
+                                  color: isDarkMode
+                                      ? AppColors.secondary
+                                      : AppColors.surface,
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -356,146 +379,145 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          GestureDetector(
-            onTap: () =>
-                setState(() => isPreparationExpanded = !isPreparationExpanded),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: isDarkMode ? AppColors.secondary : AppColors.surface,
-                borderRadius: const BorderRadius.all(Radius.circular(40)),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 10,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 19,
-                        vertical: 10,
-                      ),
-                      child: Text(
-                        'приготовление',
-                        style: Theme.of(context).textTheme.headlineLarge!
-                            .copyWith(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
+          AnimatedContainer(
+            width: double.infinity,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              color: isDarkMode ? AppColors.secondary : AppColors.surface,
+              borderRadius: const BorderRadius.all(Radius.circular(40)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () => setState(
+                      () => isPreparationExpanded = !isPreparationExpanded,
+                    ),
+                    behavior: HitTestBehavior.opaque,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 19,
+                          vertical: 10,
+                        ),
+                        child: Center(
+                          child: Text(
+                            'приготовление',
+                            style: Theme.of(context).textTheme.headlineLarge!
+                                .copyWith(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ),
                       ),
                     ),
+                  ),
 
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      alignment: Alignment.topCenter,
-                      child: isPreparationExpanded
-                          ? Column(
+                  AnimatedCrossFade(
+                    duration: const Duration(milliseconds: 300),
+                    sizeCurve: Curves.easeInOut,
+                    crossFadeState: isPreparationExpanded
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    firstChild: const SizedBox(width: double.infinity),
+                    secondChild: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        ...recipe.sections.map((section) {
+                          final sectionIndex =
+                              recipe.sections.indexOf(section) + 1;
+                          return Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(
+                              bottom: 20,
+                              left: 20,
+                              right: 20,
+                            ),
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: isDarkMode
+                                  ? AppColors.cardColor
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const SizedBox(height: 20),
-                                ...recipe.sections.map((section) {
-                                  final sectionIndex =
-                                      recipe.sections.indexOf(section) + 1;
-                                  return Container(
-                                    width: double.infinity,
-                                    margin: const EdgeInsets.only(
-                                      bottom: 20,
-                                      left: 20,
-                                      right: 20,
+                                Text(
+                                  '$sectionIndex. ${section.title}:',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontStyle: FontStyle.italic,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ...section.steps.map(
+                                  (step) => CheckableItem(
+                                    id: 'step_${section.title}_${step.stepNumber}',
+                                    text: step.description,
+                                    textColor: isDarkMode
+                                        ? AppColors.textPrimary
+                                        : null,
+                                    color: isDarkMode
+                                        ? AppColors.cardColor
+                                        : Colors.white,
+                                  ),
+                                ),
+                                if (recipe.sections.last == section)
+                                  const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 16),
+                                      child: Text(
+                                        'Приятного аппетита!',
+                                        style: TextStyle(
+                                          fontStyle: FontStyle.italic,
+                                          color: AppColors.primaryColor,
+                                        ),
+                                      ),
                                     ),
-                                    padding: const EdgeInsets.all(24),
-                                    decoration: BoxDecoration(
+                                  ),
+                              ],
+                            ),
+                          );
+                        }),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 60,
+                            child: ElevatedButton(
+                              onPressed: () => _showResetDialog(context, ref),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: Text(
+                                'приготовлено',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineMedium!
+                                    .copyWith(
                                       color: isDarkMode
                                           ? AppColors.cardColor
                                           : Colors.white,
-                                      borderRadius: BorderRadius.circular(32),
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '$sectionIndex. ${section.title}:',
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontStyle: FontStyle.italic,
-                                            color: AppColors.primaryColor,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        ...section.steps.map(
-                                          (step) => CheckableItem(
-                                            id: 'step_${section.title}_${step.stepNumber}',
-                                            text: step.description,
-                                            textColor: isDarkMode
-                                                ? AppColors.textPrimary
-                                                : null,
-                                            color: isDarkMode
-                                                ? AppColors.cardColor
-                                                : Colors.white,
-                                          ),
-                                        ),
-                                        if (recipe.sections.last == section)
-                                          const Center(
-                                            child: Padding(
-                                              padding: EdgeInsets.only(top: 16),
-                                              child: Text(
-                                                'Приятного аппетита!',
-                                                style: TextStyle(
-                                                  fontStyle: FontStyle.italic,
-                                                  color: AppColors.primaryColor,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0,
-                                  ),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    height: 60,
-                                    child: ElevatedButton(
-                                      onPressed: () =>
-                                          _showResetDialog(context, ref),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.primaryColor,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            30,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        'приготовлено',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineMedium!
-                                            .copyWith(
-                                              color: isDarkMode
-                                                  ? AppColors.cardColor
-                                                  : Colors.white,
-                                            ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            )
-                          : const SizedBox.shrink(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -547,10 +569,10 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             style: TextButton.styleFrom(
-              backgroundColor: AppColors.secondary, 
+              backgroundColor: AppColors.secondary,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8), 
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
             child: Text(
@@ -564,7 +586,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
 
           TextButton(
             onPressed: () {
-              ref.read(checkedItemsProvider.notifier).state = {};
+              ref.read(checkedItemsProvider.notifier).clearAll();
               Navigator.pop(context);
               ScaffoldMessenger.of(
                 context,

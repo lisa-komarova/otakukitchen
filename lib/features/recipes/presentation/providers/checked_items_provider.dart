@@ -1,3 +1,20 @@
-import 'package:flutter_riverpod/legacy.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final checkedItemsProvider = StateProvider<Set<String>>((ref) => {});
+part 'checked_items_provider.g.dart';
+
+@riverpod
+class CheckedItems extends _$CheckedItems {
+  @override
+  Set<String> build() => {};
+
+  void toggle(String id) {
+    if (state.contains(id)) {
+      state = {...state}..remove(id);
+    } else {
+      state = {...state, id};
+    }
+  }
+   void clearAll() {
+    state = {};
+  }
+}
