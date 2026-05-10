@@ -257,7 +257,7 @@ void main() {
       verify(() => mockDataSource.getCategories()).called(1);
     });
   });
-   group('getRecipesByCategory', () {
+  group('getRecipesByCategory', () {
     const tCategory = 'Main';
 
     // 1. Подготавливаем "легкие" модели из датасорса
@@ -373,5 +373,130 @@ void main() {
       ).called(1);
     });
   });
+  
+  group('Search Methods', () {
+    const tQuery = 'Naruto';
+    const tLevels = "'easy'";
+    const tCategories = "'main'";
 
+    final tRecipeModels = [
+      Recipe(
+        id: 1,
+        name: 'Ramen',
+        categoryId: 1,
+        cookingTime: '',
+        level: '',
+        imageUrl: '',
+        isFavourite: false,
+      ),
+      Recipe(
+        id: 2,
+        name: 'Soup',
+        categoryId: 1,
+        cookingTime: '',
+        level: '',
+        imageUrl: '',
+        isFavourite: false,
+      ),
+    ];
+
+    void mockRecipeDetails(int id, String name) {
+      when(() => mockDataSource.getRecipeById(id)).thenAnswer(
+        (_) async => Recipe(
+          id: id,
+          name: name,
+          categoryId: 1,
+          cookingTime: '',
+          level: '',
+          imageUrl: '',
+          isFavourite: false,
+        ),
+      );
+      when(
+        () => mockDataSource.getCategory(any()),
+      ).thenAnswer((_) async => Category(id: 1, name: '', icon: ''));
+      when(
+        () => mockDataSource.getAnimesByRecipe(id),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockDataSource.getIngredientGroups(id),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockDataSource.getIngredientsInRecipe(id),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockDataSource.getRecipeSections(id),
+      ).thenAnswer((_) async => []);
+      when(() => mockDataSource.getSteps(id)).thenAnswer((_) async => []);
+    }
+
+    test(
+      'searchRecipesByAnimeTitle should fetch details for all found recipes',
+      () async {
+        // arrange
+        when(
+          () => mockDataSource.searchRecipesByAnimeTitle(
+            tQuery,
+            tLevels,
+            tCategories,
+          ),
+        ).thenAnswer((_) async => tRecipeModels);
+
+        for (var model in tRecipeModels) {
+          mockRecipeDetails(model.id, model.name);
+        }
+
+        // act
+        final result = await repository.searchRecipesByAnimeTitle(
+          tQuery,
+          tLevels,
+          tCategories,
+        );
+
+        // assert
+        expect(result.length, 2);
+        expect(result[0].name, 'Ramen');
+        expect(result[1].id, 2);
+        verify(
+          () => mockDataSource.searchRecipesByAnimeTitle(
+            tQuery,
+            tLevels,
+            tCategories,
+          ),
+        ).called(1);
+        verify(() => mockDataSource.getRecipeById(1)).called(1);
+        verify(() => mockDataSource.getRecipeById(2)).called(1);
+      },
+    );
+
+    test(
+      'searchRecipesByName should fetch details for all found recipes',
+      () async {
+        // arrange
+        when(
+          () =>
+              mockDataSource.searchRecipesByName(tQuery, tLevels, tCategories),
+        ).thenAnswer((_) async => tRecipeModels);
+
+        for (var model in tRecipeModels) {
+          mockRecipeDetails(model.id, model.name);
+        }
+
+        // act
+        final result = await repository.searchRecipesByName(
+          tQuery,
+          tLevels,
+          tCategories,
+        );
+
+        // assert
+        expect(result.length, 2);
+        verify(
+          () =>
+              mockDataSource.searchRecipesByName(tQuery, tLevels, tCategories),
+        ).called(1);
+        verify(() => mockDataSource.getRecipeById(1)).called(1);
+      },
+    );
+  });
 }

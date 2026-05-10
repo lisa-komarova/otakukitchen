@@ -7,4 +7,14 @@ abstract class RecipeRepository {
   Future<List<RecipeEntity>> getRecipesByCategory(String category);
   Future<void> updateRecipeFavouriteStatus(bool isFavourite, int recipeId);
   Future<List<RecipeEntity>> getFavouriteRecipes();
+  Future<List<RecipeEntity>> searchRecipesByName(
+    String query,
+    String levels,
+    String categories,
+  );
+  Future<List<RecipeEntity>> searchRecipesByAnimeTitle(
+    String query,
+    String levels,
+    String categories,
+  );
 }

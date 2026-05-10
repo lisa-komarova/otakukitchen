@@ -35,9 +35,10 @@ class RecipeCard extends StatelessWidget {
               _RecipeImage(imageUrl: recipe.imageUrl),
               const SizedBox(width: 15),
               Expanded(child: _RecipeInfo(recipe: recipe)),
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
+              Image.asset(
+                'assets/icons/forward.png',
+                width: 16,
+                height: 16,
                 color: AppColors.primaryColor,
               ),
             ],
@@ -107,13 +108,8 @@ class _RecipeInfo extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.access_time,
-              size: 18,
-              color: AppColors.primaryColor,
-            ),
-            const SizedBox(width: 5),
             Text(
               '${recipe.cookingTime} мин',
               style: Theme.of(

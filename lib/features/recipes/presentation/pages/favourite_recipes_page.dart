@@ -38,13 +38,8 @@ class FavouriteRecipesPage extends ConsumerWidget {
               ? Center(
                   child: Text(
                     'Рецептов пока нет :(',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium!.copyWith(fontSize: 20, color: isDarkMode
-                          ? AppColors.secondary
-                          : AppColors.textPrimary,
-                    ),
-                  ),
+                   style: Theme.of(context).textTheme.headlineMedium)
+                  ,
                 )
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(

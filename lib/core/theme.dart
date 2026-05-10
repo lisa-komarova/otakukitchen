@@ -158,8 +158,8 @@ class AppTheme {
 
         labelLarge: GoogleFonts.rubik().copyWith(
           color: AppColors.textPrimary,
-          fontWeight: FontWeight.w500,
-          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 1.2,
         ),
         labelMedium: GoogleFonts.rubik().copyWith(
           color: AppColors.textSecondary,
@@ -292,13 +292,21 @@ class AppTheme {
           fontWeight: FontWeight.bold,
           letterSpacing: 1.2,
         ),
-        labelMedium: GoogleFonts.rubik(color: Colors.white),
-        labelSmall: GoogleFonts.rubik(color: Colors.white54, fontSize: 10),
+        labelMedium: GoogleFonts.rubik(
+          color: Colors.white,
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+        ),
+        labelSmall: GoogleFonts.rubik(
+          color: Colors.white54,
+          fontWeight: FontWeight.w400,
+          fontSize: 11,
+        ),
       ),
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withAlpha(20), // прозрачный светлый
+        fillColor: Colors.white.withAlpha(20), 
         hintStyle: TextStyle(color: Colors.white54),
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         border: OutlineInputBorder(

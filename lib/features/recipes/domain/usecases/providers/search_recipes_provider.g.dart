@@ -1,26 +1,29 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'checked_items_provider.dart';
+part of 'search_recipes_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$checkedItemsHash() => r'5574840598e262bf97080eb0fcf56a333635c7f0';
+String _$searchRecipesUseCaseHash() =>
+    r'932b5f19b8a8a4c1d18ffacf1706cc3b1b120ec9';
 
-/// See also [CheckedItems].
-@ProviderFor(CheckedItems)
-final checkedItemsProvider =
-    AutoDisposeNotifierProvider<CheckedItems, Set<String>>.internal(
-      CheckedItems.new,
-      name: r'checkedItemsProvider',
+/// See also [searchRecipesUseCase].
+@ProviderFor(searchRecipesUseCase)
+final searchRecipesUseCaseProvider =
+    AutoDisposeProvider<SearchRecipesUseCase>.internal(
+      searchRecipesUseCase,
+      name: r'searchRecipesUseCaseProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$checkedItemsHash,
+          : _$searchRecipesUseCaseHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
-typedef _$CheckedItems = AutoDisposeNotifier<Set<String>>;
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef SearchRecipesUseCaseRef = AutoDisposeProviderRef<SearchRecipesUseCase>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

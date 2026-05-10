@@ -21,6 +21,16 @@ abstract class RecipeLocalDataSource {
   Future<List<Step>> getSteps(int recipeId);
   Future<void> updateRecipeFavouriteStatus(bool isFavourite, int recipeId);
   Future<List<Recipe>> getFavouriteRecipes();
+  Future<List<Recipe>> searchRecipesByName(
+    String query,
+    String levels,
+    String categories,
+  );
+  Future<List<Recipe>> searchRecipesByAnimeTitle(
+    String query,
+    String levels,
+    String categories,
+  );
 }
 
 class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
@@ -167,6 +177,45 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
      select * from recipes where is_favourite = 1
       ''');
 
+    return maps.map((m) => Recipe.fromMap(m)).toList();
+  }
+
+  @override
+  Future<List<Recipe>> searchRecipesByAnimeTitle(
+    String query,
+    String levels,
+    String categories,
+  ) async {
+    final maps = await db.rawQuery(
+      '''
+        SELECT r.* FROM recipes r
+        JOIN recipes_in_anime ria ON r.id = ria.recipe_id
+        JOIN animes a ON ria.anime_id = a.id
+        WHERE a.title LIKE ? 
+          AND (? = '' OR r.level IN ($levels))
+        AND (? = '' OR r.category_id IN (SELECT id FROM categories WHERE name IN ($categories)))
+      ''',
+      ['%$query%', levels, categories],
+    );
+
+    return maps.map((m) => Recipe.fromMap(m)).toList();
+  }
+
+  @override
+  Future<List<Recipe>> searchRecipesByName(
+    String query,
+    String levels,
+    String categories,
+  ) async {
+    final maps = await db.rawQuery(
+      '''
+        SELECT * FROM recipes 
+        WHERE name LIKE ? 
+          AND (? = '' OR level IN ($levels))
+          AND (? = '' OR category_id IN (SELECT id FROM categories WHERE name IN ($categories)))
+      ''',
+      ['%$query%', levels, categories],
+    );
     return maps.map((m) => Recipe.fromMap(m)).toList();
   }
 }

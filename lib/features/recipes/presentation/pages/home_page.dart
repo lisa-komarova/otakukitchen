@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:otakukitchen/core/theme.dart';
 import 'package:otakukitchen/features/recipes/presentation/pages/categories_page.dart';
 import 'package:otakukitchen/features/recipes/presentation/pages/favourite_recipes_page.dart';
+import 'package:otakukitchen/features/recipes/presentation/pages/search_recipes_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,7 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int currentPageIndex = 1;
+  int currentPageIndex = 0;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
         bottomNavigationBar: _buildBottomNavBar(context),
         body: <Widget>[
           const CategoriesPage(),
-          const Placeholder(),
+          const SearchRecipesPage(),
           const FavouriteRecipesPage(),
         ][currentPageIndex],
       ),

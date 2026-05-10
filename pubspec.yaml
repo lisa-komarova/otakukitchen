@@ -107,7 +107,13 @@ flutter:
     - assets/icons/menu.png
     - assets/icons/star.png
     - assets/icons/star_filled.png
-    - assets/icons/arrow_back.png 
+    - assets/icons/arrow_back.png
+    - assets/icons/divider.png
+    - assets/icons/clear.png
+    - assets/icons/forward.png
+    - assets/icons/filter.png
+    - assets/logo.png
+    - assets/splash_logo.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

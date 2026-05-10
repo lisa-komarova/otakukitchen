@@ -86,4 +86,34 @@ class RecipeRepositoryImpl extends RecipeRepository {
 
     return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
   }
+
+  @override
+  Future<List<RecipeEntity>> searchRecipesByAnimeTitle(
+    String query,
+    String levels,
+    String categories,
+  ) async {
+    final recipes = await datasource.searchRecipesByAnimeTitle(
+      query,
+      levels,
+      categories,
+    );
+
+    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+  }
+
+  @override
+  Future<List<RecipeEntity>> searchRecipesByName(
+    String query,
+    String levels,
+    String categories,
+  ) async {
+    final recipes = await datasource.searchRecipesByName(
+      query,
+      levels,
+      categories,
+    );
+
+    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+  }
 }

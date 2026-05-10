@@ -288,4 +288,208 @@ void main() {
       ).called(1);
     });
   });
+  group('searchRecipesByAnimeTitle', () {
+    const tQuery = 'Naruto';
+    const tLevels = "'easy', 'medium'";
+    const tCategories = "'Soup'";
+
+    final tRecipeMap = [
+      {
+        'id': 1,
+        'name': 'Ramen',
+        'level': 'easy',
+        'category': 'Soup',
+        'cookingTime': '30 min',
+        'imageUrl': '',
+        'isFavourite': 0,
+      },
+    ];
+
+    test('should execute correct SQL query for anime title search', () async {
+      // Arrange
+      when(
+        () => mockDb.rawQuery(any(), any()),
+      ).thenAnswer((_) async => tRecipeMap);
+
+      // Act
+      await dataSource.searchRecipesByAnimeTitle(tQuery, tLevels, tCategories);
+
+      // Assert
+      verify(
+        () => mockDb.rawQuery(
+          any(
+            that: contains('JOIN recipes_in_anime'),
+          ), // Проверяем наличие JOIN
+          ['%$tQuery%', tLevels, tCategories],
+        ),
+      ).called(1);
+    });
+  });
+
+  group('searchRecipesByName', () {
+    test('should execute correct SQL query for recipe name search', () async {
+      // Arrange
+      const tQuery = 'Ramen';
+      when(() => mockDb.rawQuery(any(), any())).thenAnswer((_) async => []);
+
+      // Act
+      await dataSource.searchRecipesByName(tQuery, '', '');
+
+      // Assert
+      verify(
+        () => mockDb.rawQuery(any(that: contains('WHERE name LIKE ?')), [
+          '%Ramen%',
+          '',
+          '',
+        ]),
+      ).called(1);
+    });
+  });
+  group('Levels Filtering', () {
+    test(
+      'should return only "easy" recipes when level filter is set to "easy"',
+      () async {
+        //  ARRANGE
+        when(() => mockDb.rawQuery(any(), any())).thenAnswer(
+          (_) async => [
+            {
+              'id': 1,
+              'name': 'Miso Ramen',
+              'level': 'easy',
+              'categoryId': 1,
+              'cookingTime': '20',
+              'imageUrl': '',
+              'isFavourite': 0,
+            },
+          ],
+        );
+
+        // ACT
+        final result = await dataSource.searchRecipesByName('', "'easy'", '');
+
+        // ASSERT
+        expect(result.every((r) => r.level == 'easy'), isTrue);
+        expect(result.any((r) => r.name == 'Miso Ramen'), isTrue);
+
+        verify(() => mockDb.rawQuery(any(), any())).called(1);
+      },
+    );
+
+    test(
+      'should return multiple levels when IN clause has multiple values',
+      () async {
+        // arrange
+        when(() => mockDb.rawQuery(any(), any())).thenAnswer(
+          (_) async => [
+            {'id': 1, 'name': 'Ramen', 'level': 'easy', 'category': 'Soup'},
+            {'id': 2, 'name': 'Sushi', 'level': 'hard', 'category': 'Fish'},
+          ],
+        );
+
+        // act
+        final result = await dataSource.searchRecipesByName(
+          '',
+          "'easy', 'hard'",
+          '',
+        );
+
+        // assert
+        expect(result.length, 2);
+        verify(() => mockDb.rawQuery(any(), any())).called(1);
+      },
+    );
+  });
+  group('Categories Filtering', () {
+    test('should return recipes only from the selected category ID', () async {
+      // Arrange
+      const tCategoryId = '1';
+      when(() => mockDb.rawQuery(any(), any())).thenAnswer(
+        (_) async => [
+          {
+            'id': 1,
+            'name': 'Ramen',
+            'category_id': 1,
+            'level': 'easy',
+            'cooking_time': '',
+            'image_url': '',
+            'is_favourite': 0,
+          },
+        ],
+      );
+
+      // Act
+      final result = await dataSource.searchRecipesByName(
+        '',
+        '',
+        "'$tCategoryId'",
+      );
+
+      // Assert
+      expect(result.first.categoryId, 1);
+
+      verify(
+        () => mockDb.rawQuery(
+          any(that: contains('category IN (\'$tCategoryId\')')),
+          ['%%', '', "'$tCategoryId'"],
+        ),
+      ).called(1);
+    });
+  });
+
+  group('Empty Filters Logic', () {
+    test(
+      'should ignore level and category filters when they are empty strings',
+      () async {
+        // Arrange
+        when(() => mockDb.rawQuery(any(), any())).thenAnswer(
+          (_) async => [
+            {'id': 1, 'name': 'Ramen', 'categoryId': 1, 'level': 'easy'},
+          ],
+        );
+
+        // Act
+        await dataSource.searchRecipesByName('Ramen', '', '');
+
+        // Assert
+        // Проверяем, что в параметры ушли именно пустые строки,
+        // которые в SQL превратятся в (? = '') -> ('' = '') -> TRUE
+        verify(() => mockDb.rawQuery(any(), ['%Ramen%', '', ''])).called(1);
+      },
+    );
+  });
+
+  group('Complex Search (Anime Title + Filters)', () {
+    test(
+      'should call searchByAnimeTitle with all arguments correctly',
+      () async {
+        // Arrange
+        const tQuery = 'Naruto';
+        const tLevels = "'hard'";
+        const tCategories = "'1', '2'";
+
+        when(() => mockDb.rawQuery(any(), any())).thenAnswer((_) async => []);
+
+        // Act
+        await dataSource.searchRecipesByAnimeTitle(
+          tQuery,
+          tLevels,
+          tCategories,
+        );
+
+        // Assert
+        verify(
+          () => mockDb.rawQuery(
+            any(
+              that: allOf([
+                contains('JOIN animes'),
+                contains('a.title LIKE ?'),
+                contains('r.level IN ($tLevels)'),
+              ]),
+            ),
+            ['%$tQuery%', tLevels, tCategories],
+          ),
+        ).called(1);
+      },
+    );
+  });
 }

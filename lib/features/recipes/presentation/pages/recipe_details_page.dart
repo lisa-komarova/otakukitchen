@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otakukitchen/core/theme.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/checked_items_provider.dart';
+import 'package:otakukitchen/features/recipes/presentation/providers/favourite_recipes_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/recipe_details_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/widgets/chekable_item.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -91,14 +92,15 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                                   ? AppColors.surface
                                   : AppColors.primaryColor,
                             ),
-                            onPressed: () {
-                              ref
+                            onPressed: () async {
+                              await ref
                                   .read(
                                     recipeDetailsControllerProvider(
                                       widget.recipeId,
                                     ).notifier,
                                   )
                                   .toggleFavorite();
+                              ref.invalidate(favouriteRecipesProvider);
                             },
                           ),
                           loading: () => CircularProgressIndicator(),
@@ -112,6 +114,35 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                         children: [
                           _buildIngredients(recipe, context),
                           _buildPreparation(recipe, context),
+                          if (!isIngredientExpanded && !isPreparationExpanded)
+                            GestureDetector(
+                              onTap: () => _openTikTokAccount(),
+                              child: Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(28),
+                                    border: BoxBorder.all(
+                                      color: Colors.white,
+                                      width: 3,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withAlpha(100),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(28),
+                                    child: Image.asset('assets/logo.png', fit: BoxFit.cover,),
+                                  ),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -129,7 +160,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
     bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     const Map<String, String> levelTranslation = {
-      'easy': 'легкая сложность',
+      'easy': 'низкая сложность',
       'medium': 'средняя сложность',
       'hard': 'высокая сложность',
     };
@@ -181,13 +212,18 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      '${recipe.cookingTime} мин',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyLarge!.copyWith(fontSize: 18),
+                    Tooltip(
+                      triggerMode: TooltipTriggerMode.tap,
+                      message: "время приготовления",
+                      child: Text(
+                        '${recipe.cookingTime} мин',
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge!.copyWith(fontSize: 18),
+                      ),
                     ),
                     Tooltip(
+                      triggerMode: TooltipTriggerMode.tap,
                       message: levelTranslation[recipe.level] ?? recipe.level,
                       child: Row(
                         children: [
@@ -328,7 +364,8 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                               ...group.ingredients.map(
                                 (ing) => CheckableItem(
                                   id: 'group_${group.title}_ing_${ing.id}_${ing.name}',
-                                  text: '${ing.name} — ${ing.amount}',
+                                  text:
+                                      '${ing.name} — ${ing.amount} ${ing.note != null ? "(${ing.note})" : ""}',
                                   color: isDarkMode
                                       ? AppColors.secondary
                                       : AppColors.surface,
@@ -435,10 +472,13 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                             width: double.infinity,
                             margin: const EdgeInsets.only(
                               bottom: 20,
-                              left: 20,
-                              right: 20,
+                              left: 10,
+                              right: 10,
                             ),
-                            padding: const EdgeInsets.all(24),
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 24,
+                              horizontal: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: isDarkMode
                                   ? AppColors.cardColor
@@ -448,25 +488,38 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  '$sectionIndex. ${section.title}:',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontStyle: FontStyle.italic,
-                                    color: AppColors.primaryColor,
+                                Center(
+                                  child: Text(
+                                    '$sectionIndex. ${section.title}:',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontStyle: FontStyle.italic,
+                                      color: AppColors.primaryColor,
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
                                 ...section.steps.map(
-                                  (step) => CheckableItem(
-                                    id: 'step_${section.title}_${step.stepNumber}',
-                                    text: step.description,
-                                    textColor: isDarkMode
-                                        ? AppColors.textPrimary
-                                        : null,
-                                    color: isDarkMode
-                                        ? AppColors.cardColor
-                                        : Colors.white,
+                                  (step) => Column(
+                                    children: [
+                                      CheckableItem(
+                                        id: 'step_${section.title}_${step.stepNumber}',
+                                        text: step.description,
+                                        textColor: isDarkMode
+                                            ? AppColors.textPrimary
+                                            : null,
+                                        color: isDarkMode
+                                            ? AppColors.cardColor
+                                            : Colors.white,
+                                      ),
+                                      if (step != section.steps.last)
+                                        Image.asset(
+                                          'assets/icons/divider.png',
+                                          width: 10,
+                                          height: 10,
+                                          color: AppColors.primaryColor,
+                                        ),
+                                    ],
                                   ),
                                 ),
                                 if (recipe.sections.last == section)
@@ -577,7 +630,8 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
             ),
             child: Text(
               'ОТМЕНА',
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              style: TextStyle(
+                fontSize: 12,
                 color: Color(0xFF301659),
                 fontWeight: FontWeight.bold,
               ),
@@ -603,8 +657,9 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
             ),
             child: Text(
               'ПОДТВЕРДИТЬ',
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              style: TextStyle(
                 color: AppColors.accent,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -618,6 +673,12 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $url');
+    }
+  }
+  Future<void> _openTikTokAccount() async {
+    final Uri uri = Uri.parse("https://www.tiktok.com/@otakukitchen");
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch');
     }
   }
 
