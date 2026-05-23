@@ -4,12 +4,14 @@ import 'package:otakukitchen/features/recipes/presentation/providers/checked_ite
 
 class CheckableItem extends ConsumerWidget {
   final String id;
+  final String recipeId;
   final String text;
   final Color color;
   final Color? textColor;
   const CheckableItem({
     super.key,
     required this.id,
+    required this.recipeId,
     required this.text,
     required this.color,
     this.textColor,
@@ -17,11 +19,11 @@ class CheckableItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isChecked = ref.watch(checkedItemsProvider).contains(id);
+    final isChecked = ref.watch(checkedItemsProvider(recipeId)).contains(id);
 
     return GestureDetector(
       onTap: () {
-        ref.read(checkedItemsProvider.notifier).toggle(id);
+        ref.read(checkedItemsProvider(recipeId).notifier).toggle(id);
       },  
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),

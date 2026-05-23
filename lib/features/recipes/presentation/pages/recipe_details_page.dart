@@ -285,7 +285,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                       );
                     },
                   ),
-                )
+                ),
               ),
             ),
           ],
@@ -368,6 +368,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                               ...group.ingredients.map(
                                 (ing) => CheckableItem(
                                   id: 'group_${group.title}_ing_${ing.id}_${ing.name}',
+                                  recipeId: '${recipe.id}',
                                   text:
                                       '${ing.name} — ${ing.amount} ${ing.note != null ? "(${ing.note})" : ""}',
                                   color: isDarkMode
@@ -508,6 +509,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                                     children: [
                                       CheckableItem(
                                         id: 'step_${section.title}_${step.stepNumber}',
+                                        recipeId: '${recipe.id}',
                                         text: step.description,
                                         textColor: isDarkMode
                                             ? AppColors.textPrimary
@@ -644,7 +646,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
 
           TextButton(
             onPressed: () {
-              ref.read(checkedItemsProvider.notifier).clearAll();
+              ref.read(checkedItemsProvider('${widget.recipeId}').notifier).clearAll();
               Navigator.pop(context);
               ScaffoldMessenger.of(
                 context,
