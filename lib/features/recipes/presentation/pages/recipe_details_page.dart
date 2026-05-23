@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otakukitchen/core/theme.dart';
@@ -115,33 +114,43 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                           _buildIngredients(recipe, context),
                           _buildPreparation(recipe, context),
                           if (!isIngredientExpanded && !isPreparationExpanded)
-                            GestureDetector(
-                              onTap: () => _openTikTokAccount(),
-                              child: Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: Container(
-                                  width: double.infinity,
-                                  height: 150,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(28),
-                                    border: BoxBorder.all(
-                                      color: Colors.white,
-                                      width: 3,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withAlpha(100),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 4),
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                double adaptiveHeight =
+                                    constraints.maxWidth > 600 ? 300 : 150;
+
+                                return GestureDetector(
+                                  onTap: () => _openTikTokAccount(),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(24),
+                                    child: Container(
+                                      width: double.infinity,
+                                      height: adaptiveHeight,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(28),
+                                        border: BoxBorder.all(
+                                          color: Colors.white,
+                                          width: 3,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withAlpha(100),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(28),
+                                        child: Image.asset(
+                                          'assets/logo.png',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(28),
-                                    child: Image.asset('assets/logo.png', fit: BoxFit.cover,),
-                                  ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
                         ],
                       ),
@@ -258,30 +267,25 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(28),
-                child: CachedNetworkImage(
-                  imageUrl: recipe.imageUrl,
+                child: Container(
                   height: 200,
                   width: double.infinity,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
+                  color: AppColors.primaryColor,
+                  child: Image.asset(
+                    'assets/images/${recipe.imageUrl}',
                     height: 200,
                     width: double.infinity,
-                    color: Colors.white10,
-                    child: const Center(
-                      child: CircularProgressIndicator(color: Colors.white),
-                    ),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/no_connection.png',
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.fitWidth,
+                      );
+                    },
                   ),
-                  errorWidget: (context, url, error) => Container(
-                    height: 200,
-                    width: double.infinity,
-                    color: Colors.white24,
-                    child: const Icon(
-                      Icons.restaurant,
-                      size: 50,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                )
               ),
             ),
           ],
@@ -675,6 +679,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
       throw Exception('Could not launch $url');
     }
   }
+
   Future<void> _openTikTokAccount() async {
     final Uri uri = Uri.parse("https://www.tiktok.com/@otakukitchen");
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {

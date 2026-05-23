@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:otakukitchen/core/theme.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
@@ -32,7 +31,7 @@ class RecipeCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _RecipeImage(imageUrl: recipe.imageUrl),
+              _RecipeImage(imageUrl: 'assets/images/${recipe.imageUrl}'),
               const SizedBox(width: 15),
               Expanded(child: _RecipeInfo(recipe: recipe)),
               Image.asset(
@@ -57,20 +56,16 @@ class _RecipeImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
-      child: CachedNetworkImage(
-        imageUrl: imageUrl,
+      child: Image.asset(
+        imageUrl,
         width: 100,
         height: 100,
         fit: BoxFit.cover,
-        placeholder: (context, url) => Container(
-          color: Colors.grey[800],
-          child: const Center(child: CircularProgressIndicator()),
+        errorBuilder: (context, error, stackTrace) => Container(
+          color: AppColors.primaryColor,
+          child: Image.asset('assets/splash_logo.png'),
         ),
-        errorWidget: (context, url, error) => Container(
-          color: Colors.grey[800],
-          child: const Icon(Icons.error, color: Colors.white),
-        ),
-      ),
+      )
     );
   }
 }

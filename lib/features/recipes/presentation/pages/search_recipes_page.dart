@@ -39,29 +39,32 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
     );
     bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
-    return Scaffold(
-      backgroundColor: isDarkMode
-          ? AppColors.primaryColor
-          : AppColors.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              _buildSearchTabs(),
-              const SizedBox(height: 15),
-              _buildSearchInput(),
-              const SizedBox(height: 20),
-              Expanded(
-                child: searchAsync.when(
-                  data: (recipes) => _buildRecipeList(recipes),
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (err, stack) => Center(child: Text('Ошибка: $err')),
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: isDarkMode
+            ? AppColors.primaryColor
+            : AppColors.background,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                _buildSearchTabs(),
+                const SizedBox(height: 15),
+                _buildSearchInput(),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: searchAsync.when(
+                    data: (recipes) => _buildRecipeList(recipes),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (err, stack) => Center(child: Text('Ошибка: $err')),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

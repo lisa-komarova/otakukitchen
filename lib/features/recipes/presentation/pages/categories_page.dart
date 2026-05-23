@@ -14,31 +14,34 @@ class CategoriesPage extends ConsumerWidget {
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     final categoriesAsync = ref.watch(categoriesProvider);
 
-    return Scaffold(
-      backgroundColor: isDarkMode
-          ? AppColors.primaryColor
-          : AppColors.background,
-      body: categoriesAsync.when(
-        data: (categories) => Padding(
-          padding: const EdgeInsets.fromLTRB(15, 70, 15, 0),
-          child: Column(
-            children: categories.map((category) {
-              return Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 15),
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    color: AppColors.cardColor,
-                    borderRadius: BorderRadius.circular(25),
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        backgroundColor: isDarkMode
+            ? AppColors.primaryColor
+            : AppColors.background,
+        body: categoriesAsync.when(
+          data: (categories) => Padding(
+            padding: const EdgeInsets.fromLTRB(15, 70, 15, 0),
+            child: Column(
+              children: categories.map((category) {
+                return Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardColor,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: _buildCategoryCard(category, context),
                   ),
-                  child: _buildCategoryCard(category, context),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
           ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (err, stack) => Center(child: Text('Ошибка: $err')),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Ошибка: $err')),
       ),
     );
   }
