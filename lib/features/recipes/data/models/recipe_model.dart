@@ -8,6 +8,7 @@ class Recipe {
   final String? tiktokUrl;
   final String? telegramUrl;
   final bool isFavourite;
+  final bool isCooked;
   final String? note;
 
   const Recipe({
@@ -20,6 +21,7 @@ class Recipe {
     this.tiktokUrl,
     this.telegramUrl,
     required this.isFavourite,
+    required this.isCooked,
     this.note,
   });
 
@@ -34,6 +36,7 @@ class Recipe {
       tiktokUrl: map['tiktok_url'] as String?,
       telegramUrl: map['telegram_url'] as String?,
       isFavourite: (map['is_favourite'] as int? ?? 0) == 1,
+      isCooked: (map['is_cooked'] as int? ?? 0) == 1,
       note: map['note'] as String?,
     );
   }

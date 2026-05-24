@@ -31,7 +31,7 @@ void main() {
       cookingTime: '10',
       level: 'easy',
       imageUrl: 'https://test.com',
-      isFavourite: false,
+      isFavourite: false,isCooked: false,
       category: CategoryEntity(id: 1, name: 'Завтрак', icon: ''),
       animes: [AnimeEntity(id: 1, title: 'Название аниме')],
       ingredientGroups: [],

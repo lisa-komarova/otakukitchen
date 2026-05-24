@@ -30,6 +30,7 @@ class RecipeRepositoryImpl extends RecipeRepository {
       tiktokUrl: recipe.tiktokUrl,
       telegramUrl: recipe.telegramUrl,
       isFavourite: recipe.isFavourite,
+      isCooked: recipe.isCooked,
       note: recipe.note,
       category: CategoryEntity(
         id: category.id,
@@ -79,10 +80,24 @@ class RecipeRepositoryImpl extends RecipeRepository {
   ) async {
     await datasource.updateRecipeFavouriteStatus(isFavourite, recipeId);
   }
+  @override
+  Future<void> updateRecipeCookedStatus(
+      bool isCooked,
+      int recipeId,
+      ) async {
+    await datasource.updateRecipeCookedStatus(isCooked, recipeId);
+  }
 
   @override
   Future<List<RecipeEntity>> getFavouriteRecipes() async {
     final recipes = await datasource.getFavouriteRecipes();
+
+    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+  }
+
+  @override
+  Future<List<RecipeEntity>> getCookedRecipes() async {
+    final recipes = await datasource.getCookedRecipes();
 
     return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
   }
@@ -115,5 +130,11 @@ class RecipeRepositoryImpl extends RecipeRepository {
     );
 
     return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+  }
+
+  @override
+  Future<int> getRecipesAmount() async {
+    int amount = await datasource.getRecipesAmount();
+    return amount;
   }
 }

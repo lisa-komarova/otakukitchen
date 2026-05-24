@@ -106,7 +106,7 @@ class _RecipeInfo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              '${recipe.cookingTime} мин',
+              '~${recipe.cookingTime} мин',
               style: Theme.of(
                 context,
               ).textTheme.bodySmall!.copyWith(color: AppColors.primaryColor),

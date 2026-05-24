@@ -37,6 +37,7 @@ void main() {
         categoryId: 10,
         imageUrl: 'img',
         isFavourite: true,
+        isCooked: false,
       ),
     );
 
@@ -119,6 +120,7 @@ void main() {
         categoryId: 1,
         imageUrl: '',
         isFavourite: false,
+        isCooked: false,
       ),
     );
 
@@ -260,7 +262,6 @@ void main() {
   group('getRecipesByCategory', () {
     const tCategory = 'Main';
 
-    // 1. Подготавливаем "легкие" модели из датасорса
     final tRecipeModels = [
       Recipe(
         id: 1,
@@ -270,6 +271,7 @@ void main() {
         categoryId: 1,
         imageUrl: '',
         isFavourite: false,
+        isCooked: false,
       ),
       Recipe(
         id: 2,
@@ -279,19 +281,15 @@ void main() {
         categoryId: 1,
         imageUrl: '',
         isFavourite: false,
+        isCooked: false,
       ),
     ];
 
     test('should fetch recipes and then fetch details for each recipe', () async {
       // arrange
-      // Когда запрашиваем список по категории, возвращаем две модели
       when(
         () => mockDataSource.getRecipesByCategory(tCategory),
       ).thenAnswer((_) async => tRecipeModels);
-
-      // Так как метод вызывает getRecipeDetails(id), нам нужно "замокать" все внутренние вызовы
-      // датасорса, которые нужны для сборки деталей (категории, ингредиенты и т.д.)
-      // Для простоты здесь настроим только ID и категорию
       when(() => mockDataSource.getRecipeById(any())).thenAnswer((
         invocation,
       ) async {
@@ -299,7 +297,6 @@ void main() {
         return tRecipeModels.firstWhere((r) => r.id == id);
       });
 
-      // Заглушки для остальных вызовов внутри getRecipeDetails
       when(
         () => mockDataSource.getCategory(any()),
       ).thenAnswer((_) async => Category(id: 1, name: 'Main', icon: ''));
@@ -325,7 +322,6 @@ void main() {
       expect(result[0].id, 1);
       expect(result[1].id, 2);
 
-      // Проверяем, что датасорс был опрошен для каждого рецепта
       verify(() => mockDataSource.getRecipesByCategory(tCategory)).called(1);
       verify(() => mockDataSource.getRecipeById(1)).called(1);
       verify(() => mockDataSource.getRecipeById(2)).called(1);
@@ -373,7 +369,49 @@ void main() {
       ).called(1);
     });
   });
-  
+  group('updateRecipeCookedStatus', () {
+    const tRecipeId = 1;
+    const tIsCooked = true;
+
+    test(
+      'should call dataSource.updateRecipeCookedStatus with correct parameters',
+      () async {
+        // arrange
+        when(
+          () => mockDataSource.updateRecipeCookedStatus(any(), any()),
+        ).thenAnswer((_) async => Future.value());
+
+        // act
+        await repository.updateRecipeCookedStatus(tIsCooked, tRecipeId);
+
+        // assert
+        verify(
+          () => mockDataSource.updateRecipeCookedStatus(
+            tIsCooked,
+            tRecipeId,
+          ),
+        ).called(1);
+      },
+    );
+
+    test('should throw exception when dataSource fails', () async {
+      // arrange
+      when(
+        () => mockDataSource.updateRecipeCookedStatus(any(), any()),
+      ).thenThrow(Exception('DB Update Error'));
+
+      // act
+      final call = repository.updateRecipeCookedStatus;
+
+      // assert
+      expect(() => call(tIsCooked, tRecipeId), throwsA(isA<Exception>()));
+      verify(
+        () =>
+            mockDataSource.updateRecipeCookedStatus(tIsCooked, tRecipeId),
+      ).called(1);
+    });
+  });
+
   group('Search Methods', () {
     const tQuery = 'Naruto';
     const tLevels = "'easy'";
@@ -388,6 +426,7 @@ void main() {
         level: '',
         imageUrl: '',
         isFavourite: false,
+        isCooked: false,
       ),
       Recipe(
         id: 2,
@@ -397,6 +436,7 @@ void main() {
         level: '',
         imageUrl: '',
         isFavourite: false,
+        isCooked: false,
       ),
     ];
 
@@ -410,6 +450,7 @@ void main() {
           level: '',
           imageUrl: '',
           isFavourite: false,
+          isCooked: false,
         ),
       );
       when(
@@ -499,4 +540,38 @@ void main() {
       },
     );
   });
+  group('getRecipesAmount', () {
+    test(
+      'should return the total number of recipes from the data source upon a successful request',
+      () async {
+        // Arrange
+        when(
+          () => mockDataSource.getRecipesAmount(),
+        ).thenAnswer((_) async => 42);
+
+        // Act
+        final result = await repository.getRecipesAmount();
+
+        // Assert
+        expect(result, equals(42));
+        verify(() => mockDataSource.getRecipesAmount()).called(1);
+        verifyNoMoreInteractions(mockDataSource);
+      },
+    );
+
+    test(
+      'should rethrow the error if the data source throws an exception',
+      () async {
+        // Arrange
+        when(
+          () => mockDataSource.getRecipesAmount(),
+        ).thenThrow(Exception('DB Error'));
+
+        // Act & Assert
+        expect(() => repository.getRecipesAmount(), throwsA(isA<Exception>()));
+      },
+    );
+  }); 
+  
+
 }

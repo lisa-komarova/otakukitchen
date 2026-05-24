@@ -4,9 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otakukitchen/core/theme.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/checked_items_provider.dart';
+import 'package:otakukitchen/features/recipes/presentation/providers/cooked_recipes_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/favourite_recipes_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/recipe_details_provider.dart';
-import 'package:otakukitchen/features/recipes/presentation/widgets/chekable_item.dart';
+import 'package:otakukitchen/features/recipes/presentation/widgets/checkable_item.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RecipeDetailsPage extends ConsumerStatefulWidget {
@@ -67,6 +68,26 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                             : AppColors.primaryColor,
                       ),
                       actions: [
+                        recipeAsync.when(
+                          data: (recipe) => recipe.isCooked
+                              ? IconButton(
+                                  icon: Image.asset(
+                                    'assets/icons/cooked.png',
+                                    width: 35,
+                                    height: 35,
+                                    color: isDarkMode
+                                        ? AppColors.surface
+                                        : AppColors.primaryColor,
+                                  ),
+                                  onPressed: () => _showResetCookedStatusDialog(
+                                    context,
+                                    ref,
+                                  ),
+                                )
+                              : SizedBox.shrink(),
+                          loading: () => CircularProgressIndicator(),
+                          error: (err, stack) => Text('Error'),
+                        ),
                         IconButton(
                           icon: Icon(Icons.tiktok, size: 30),
                           onPressed: () => _openTikTok(
@@ -225,7 +246,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                       triggerMode: TooltipTriggerMode.tap,
                       message: "время приготовления",
                       child: Text(
-                        '${recipe.cookingTime} мин',
+                        '~${recipe.cookingTime} мин',
                         style: Theme.of(
                           context,
                         ).textTheme.bodyLarge!.copyWith(fontSize: 18),
@@ -619,7 +640,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
           ),
         ),
         content: Text(
-          'При нажатии "приготовлено" все ингредиенты и шаги будут сброшены',
+          'При нажатии "приготовлено" все ингредиенты и шаги будут сброшены, а рецепт будет добавлен в список приготовленных',
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
             color: isDarkMode ? AppColors.secondary : null,
           ),
@@ -646,11 +667,19 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
 
           TextButton(
             onPressed: () {
-              ref.read(checkedItemsProvider('${widget.recipeId}').notifier).clearAll();
+              final messenger = ScaffoldMessenger.of(context);
+              ref
+                  .read(checkedItemsProvider('${widget.recipeId}').notifier)
+                  .clearAll();
+              ref
+                  .read(
+                    recipeDetailsControllerProvider(widget.recipeId).notifier,
+                  )
+                  .toggleCooked(true);
+              ref.invalidate(cookedRecipesProvider);
               Navigator.pop(context);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Прогресс сброшен')));
+              messenger.showSnackBar(const SnackBar(content: Text('Прогресс сброшен и рецепт добавлен в список приготовленных')),
+              );
             },
             style: TextButton.styleFrom(
               backgroundColor: isDarkMode
@@ -663,6 +692,90 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
             ),
             child: Text(
               'ПОДТВЕРДИТЬ',
+              style: TextStyle(
+                color: AppColors.accent,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showResetCookedStatusDialog(BuildContext context, WidgetRef ref) {
+    bool isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text(
+          'Удалить рецепт из списка приготовленных?',
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: isDarkMode ? AppColors.secondary : null,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            style: TextButton.styleFrom(
+              backgroundColor: AppColors.secondary,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'ОТМЕНА',
+              style: TextStyle(
+                fontSize: 12,
+                color: Color(0xFF301659),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          TextButton(
+            onPressed: () {
+              final messenger = ScaffoldMessenger.of(context);
+              Navigator.pop(context);
+              ref
+                  .read(
+                    recipeDetailsControllerProvider(widget.recipeId).notifier,
+                  )
+                  .toggleCooked(false)
+                  .then((_) {
+                    ref.invalidate(cookedRecipesProvider);
+
+                    messenger.showSnackBar(
+                      const SnackBar(
+                        content: Text('Рецепт удален из списка приготовленных'),
+                      ),
+                    );
+                  })
+                  .catchError((error) {
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                          'Не удалось изменить статус. Попробуйте позже.',
+                        ),
+                        backgroundColor: Colors.red[700],
+                      ),
+                    );
+                  });
+            },
+            style: TextButton.styleFrom(
+              backgroundColor: isDarkMode
+                  ? AppColors.background.withAlpha(50)
+                  : AppColors.primaryColor,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'УДАЛИТЬ',
               style: TextStyle(
                 color: AppColors.accent,
                 fontSize: 12,

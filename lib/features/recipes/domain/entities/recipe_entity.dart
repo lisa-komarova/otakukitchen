@@ -14,6 +14,7 @@ class RecipeEntity {
   final String? tiktokUrl;
   final String? telegramUrl;
   final bool isFavourite;
+  final bool isCooked;
   final String? note;
   final CategoryEntity category;
   final List<AnimeEntity> animes;
@@ -29,6 +30,7 @@ class RecipeEntity {
     this.tiktokUrl,
     this.telegramUrl,
     required this.isFavourite,
+    required this.isCooked,
     this.note,
     required this.category,
     required this.animes,
@@ -44,6 +46,7 @@ class RecipeEntity {
     String? tiktokUrl,
     String? telegramUrl,
     bool? isFavourite,
+    bool? isCooked,
     String? note,
     CategoryEntity? category,
     List<AnimeEntity>? animes,
@@ -59,6 +62,7 @@ class RecipeEntity {
       tiktokUrl: tiktokUrl ?? this.tiktokUrl,
       telegramUrl: telegramUrl ?? this.telegramUrl,
       isFavourite: isFavourite ?? this.isFavourite,
+      isCooked:  isCooked ?? this.isCooked,
       note: note ?? this.note,
       category: category ?? this.category,
       animes: animes ?? this.animes,

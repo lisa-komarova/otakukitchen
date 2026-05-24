@@ -13,14 +13,16 @@ abstract class RecipeLocalDataSource {
   Future<Category> getCategory(int categoryId);
   Future<List<Category>> getCategories();
   Future<List<Anime>> getAnimesByRecipe(int recipeId);
-
+  Future<int> getRecipesAmount();
   Future<List<IngredientGroup>> getIngredientGroups(int recipeId);
   Future<List<IngredientInRecipe>> getIngredientsInRecipe(int recipeId);
 
   Future<List<RecipeSection>> getRecipeSections(int recipeId);
   Future<List<Step>> getSteps(int recipeId);
   Future<void> updateRecipeFavouriteStatus(bool isFavourite, int recipeId);
+  Future<void> updateRecipeCookedStatus(bool isFavourite, int recipeId);
   Future<List<Recipe>> getFavouriteRecipes();
+  Future<List<Recipe>> getCookedRecipes();
   Future<List<Recipe>> searchRecipesByName(
     String query,
     String levels,
@@ -172,9 +174,31 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
   }
 
   @override
+  Future<void> updateRecipeCookedStatus(
+      bool isCooked,
+      int recipeId,
+      ) async {
+    await db.update(
+      'recipes',
+      {'is_cooked': isCooked ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [recipeId],
+    );
+  }
+
+  @override
   Future<List<Recipe>> getFavouriteRecipes() async {
     final maps = await db.rawQuery('''
      select * from recipes where is_favourite = 1
+      ''');
+
+    return maps.map((m) => Recipe.fromMap(m)).toList();
+  }
+
+  @override
+  Future<List<Recipe>> getCookedRecipes() async {
+    final maps = await db.rawQuery('''
+     select * from recipes where is_cooked = 1
       ''');
 
     return maps.map((m) => Recipe.fromMap(m)).toList();
@@ -217,5 +241,15 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
       ['%$query%', levels, categories],
     );
     return maps.map((m) => Recipe.fromMap(m)).toList();
+  }
+
+  @override
+  Future<int> getRecipesAmount() async {
+    final result = await db.rawQuery(
+      '''
+    SELECT COUNT(*) FROM recipes 
+    ''',
+    );
+    return Sqflite.firstIntValue(result) ?? 0;
   }
 }

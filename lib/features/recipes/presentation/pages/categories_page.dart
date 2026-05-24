@@ -22,7 +22,7 @@ class CategoriesPage extends ConsumerWidget {
             : AppColors.background,
         body: categoriesAsync.when(
           data: (categories) => Padding(
-            padding: const EdgeInsets.fromLTRB(15, 70, 15, 0),
+            padding: const EdgeInsets.fromLTRB(15, 60, 15, 0),
             child: Column(
               children: categories.map((category) {
                 return Expanded(

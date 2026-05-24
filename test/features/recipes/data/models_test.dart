@@ -280,6 +280,7 @@ void main() {
         'tiktok_url': 'tiktok.com/video',
         'telegram_url': 't.me/recipe',
         'is_favourite': 1,
+        'is_cooked' : 1,
         'note': 'Best served hot',
       };
 
@@ -294,6 +295,7 @@ void main() {
       expect(recipe.tiktokUrl, 'tiktok.com/video');
       expect(recipe.telegramUrl, 't.me/recipe');
       expect(recipe.isFavourite, true);
+       expect(recipe.isCooked, true);
       expect(recipe.note, 'Best served hot');
     });
 
@@ -308,6 +310,7 @@ void main() {
         'tiktok_url': null,
         'telegram_url': null,
         'is_favourite': null,
+        'is_cooked' : null,
         'note': null,
       };
 
@@ -322,6 +325,7 @@ void main() {
       expect(recipe.tiktokUrl, isNull);
       expect(recipe.telegramUrl, isNull);
       expect(recipe.isFavourite, false);
+      expect(recipe.isCooked, false);
       expect(recipe.note, isNull);
     });
 
@@ -335,6 +339,18 @@ void main() {
 
       expect(recipeTrue.isFavourite, true);
       expect(recipeFalse.isFavourite, false);
+    });
+
+    test('should convert is_cooked correctly', () {
+      final mapTrue = {'id': 3, 'is_cooked': 1};
+
+      final mapFalse = {'id': 4, 'is_cooked': 0};
+
+      final recipeTrue = Recipe.fromMap(mapTrue);
+      final recipeFalse = Recipe.fromMap(mapFalse);
+
+      expect(recipeTrue.isCooked, true);
+      expect(recipeFalse.isCooked, false);
     });
 
     test('should handle missing optional fields', () {
@@ -351,6 +367,7 @@ void main() {
       expect(recipe.tiktokUrl, isNull);
       expect(recipe.telegramUrl, isNull);
       expect(recipe.isFavourite, false);
+      expect(recipe.isCooked, false);
       expect(recipe.note, isNull);
     });
 

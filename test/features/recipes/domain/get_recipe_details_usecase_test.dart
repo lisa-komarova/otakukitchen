@@ -26,7 +26,7 @@ void main() {
     cookingTime: '30 min',
     level: 'easy',
     imageUrl: 'url',
-    isFavourite: false,
+    isFavourite: false,isCooked: false,
     category: CategoryEntity(id: 1, name: 'Main', icon: '🍜'),
     animes: [],
     ingredientGroups: [],

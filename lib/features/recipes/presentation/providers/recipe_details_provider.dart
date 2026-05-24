@@ -3,6 +3,8 @@ import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart
 import 'package:otakukitchen/features/recipes/domain/repositories/recipe_repository_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/recipes_by_category_provider.dart';
 
+import '../../domain/usecases/providers/update_recipe_cooked_status_provider.dart';
+
 part 'recipe_details_provider.g.dart';
 
 @riverpod
@@ -24,6 +26,24 @@ class RecipeDetailsController extends _$RecipeDetailsController {
     try {
       final repository = ref.read(recipeRepositoryProvider);
       await repository.updateRecipeFavouriteStatus(newStatus, id);
+
+      ref.invalidate(recipesByCategoryProvider);
+    } catch (e, _) {
+      state = AsyncData(oldRecipe);
+    }
+  }
+
+  Future<void> toggleCooked(bool isCooked) async {
+    final oldRecipe = state.valueOrNull;
+    if (oldRecipe == null) return;
+
+    final newStatus = isCooked;
+
+    state = AsyncData(oldRecipe.copyWith(isCooked: newStatus));
+
+    try {
+      final useCase = ref.read(updateRecipeCookedStatusUseCaseProvider);
+      await useCase.call(newStatus, id);
 
       ref.invalidate(recipesByCategoryProvider);
     } catch (e, _) {

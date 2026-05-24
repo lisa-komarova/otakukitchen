@@ -400,37 +400,23 @@ void main() {
     );
   });
   group('Categories Filtering', () {
-    test('should return recipes only from the selected category ID', () async {
+    test('should execute correct SQL query for category search', () async {
       // Arrange
       const tCategoryId = '1';
-      when(() => mockDb.rawQuery(any(), any())).thenAnswer(
-        (_) async => [
-          {
-            'id': 1,
-            'name': 'Ramen',
-            'category_id': 1,
-            'level': 'easy',
-            'cooking_time': '',
-            'image_url': '',
-            'is_favourite': 0,
-          },
-        ],
-      );
+      when(() => mockDb.rawQuery(any(), any())).thenAnswer((_) async => []);
 
       // Act
-      final result = await dataSource.searchRecipesByName(
-        '',
-        '',
-        "'$tCategoryId'",
-      );
+      await dataSource.searchRecipesByName('', '', tCategoryId);
 
       // Assert
-      expect(result.first.categoryId, 1);
-
       verify(
         () => mockDb.rawQuery(
-          any(that: contains('category IN (\'$tCategoryId\')')),
-          ['%%', '', "'$tCategoryId'"],
+          any(that: contains('category_id IN (SELECT id FROM categories')),
+          [
+            '%%', 
+            '', 
+            tCategoryId,
+          ],
         ),
       ).called(1);
     });
@@ -451,8 +437,6 @@ void main() {
         await dataSource.searchRecipesByName('Ramen', '', '');
 
         // Assert
-        // Проверяем, что в параметры ушли именно пустые строки,
-        // которые в SQL превратятся в (? = '') -> ('' = '') -> TRUE
         verify(() => mockDb.rawQuery(any(), ['%Ramen%', '', ''])).called(1);
       },
     );
@@ -492,4 +476,129 @@ void main() {
       },
     );
   });
+  group('Recipe Database Status Methods', () {
+    const tRecipeId = 1;
+
+    final tRawRecipesMaps = [
+      {
+        'id': 1,
+        'name': 'Ramen',
+        'category_id': 1,
+        'cooking_time': '30 min',
+        'level': 'easy',
+        'image_url': 'assets/ramen.png',
+        'is_favourite': 1,
+        'is_cooked': 0,
+      },
+      {
+        'id': 2,
+        'name': 'Soup',
+        'category_id': 1,
+        'cooking_time': '15 min',
+        'level': 'easy',
+        'image_url': 'assets/soup.png',
+        'is_favourite': 0,
+        'is_cooked': 1,
+      },
+    ];
+
+    test(
+      'updateRecipeFavouriteStatus updates is_favourite field with correct integer',
+      () async {
+        // arrange
+        when(
+          () => mockDb.update(
+            'recipes',
+            any(),
+            where: any(named: 'where'),
+            whereArgs: any(named: 'whereArgs'),
+          ),
+        ).thenAnswer(
+          (_) async => 1,
+        ); 
+
+        // act
+        await dataSource.updateRecipeFavouriteStatus(true, tRecipeId);
+
+        // assert
+        verify(
+          () => mockDb.update(
+            'recipes',
+            {'is_favourite': 1}, 
+            where: 'id = ?',
+            whereArgs: [tRecipeId],
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'updateRecipeCookedStatus updates is_cooked field with correct integer',
+      () async {
+        // arrange
+        when(
+          () => mockDb.update(
+            'recipes',
+            any(),
+            where: any(named: 'where'),
+            whereArgs: any(named: 'whereArgs'),
+          ),
+        ).thenAnswer((_) async => 1);
+
+        // act
+        await dataSource.updateRecipeCookedStatus(true, tRecipeId);
+
+        // assert
+        verify(
+          () => mockDb.update(
+            'recipes',
+            {'is_cooked': 1}, 
+            where: 'id = ?',
+            whereArgs: [tRecipeId],
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'getFavouriteRecipes returns list of Recipe when items exist',
+      () async {
+        // arrange
+        final favouriteMap = [tRawRecipesMaps[0]];
+
+        when(
+          () => mockDb.rawQuery(any()),
+        ).thenAnswer((_) async => favouriteMap);
+
+        // act
+        final result = await dataSource.getFavouriteRecipes();
+
+        // assert
+        expect(result, isA<List<Recipe>>());
+        expect(result.length, 1);
+        expect(result.first.id, 1);
+        expect(result.first.name, 'Ramen');
+        expect(result.first.isFavourite, true);
+      },
+    );
+
+    test('getCookedRecipes returns list of Recipe when items exist', () async {
+      // arrange
+      final cookedMap = [tRawRecipesMaps[1]];
+
+      when(() => mockDb.rawQuery(any())).thenAnswer((_) async => cookedMap);
+
+      // act
+      final result = await dataSource.getCookedRecipes();
+
+      // assert
+      expect(result, isA<List<Recipe>>());
+      expect(result.length, 1);
+      expect(result.first.id, 2);
+      expect(result.first.name, 'Soup');
+      expect(result.first.isCooked, true);
+    });
+  });
+
+
 }

@@ -40,7 +40,6 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
     bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     return SafeArea(
-      top: false,
       child: Scaffold(
         backgroundColor: isDarkMode
             ? AppColors.primaryColor
