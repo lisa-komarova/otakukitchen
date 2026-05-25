@@ -7,7 +7,7 @@ part of 'recipe_details_provider.dart';
 // **************************************************************************
 
 String _$recipeDetailsControllerHash() =>
-    r'2608cee222049d01d976ce91f4a395d6ee7e6588';
+    r'f63b1337506d22bf1d65773b98c2bad62c1aa3db';
 
 /// Copied from Dart SDK
 class _SystemHash {

@@ -1,3 +1,4 @@
+import 'package:otakukitchen/features/recipes/domain/usecases/providers/get_recipe_details_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/repositories/recipe_repository_provider.dart';
@@ -11,8 +12,8 @@ part 'recipe_details_provider.g.dart';
 class RecipeDetailsController extends _$RecipeDetailsController {
   @override
   FutureOr<RecipeEntity> build(int id) async {
-    final repository = ref.watch(recipeRepositoryProvider);
-    return repository.getRecipeDetails(id);
+    final useCase = ref.watch(getRecipeDetailsUseCaseProvider);
+    return useCase.call(id);
   }
 
   Future<void> toggleFavorite() async {
@@ -24,9 +25,8 @@ class RecipeDetailsController extends _$RecipeDetailsController {
     state = AsyncData(oldRecipe.copyWith(isFavourite: newStatus));
 
     try {
-      final repository = ref.read(recipeRepositoryProvider);
-      await repository.updateRecipeFavouriteStatus(newStatus, id);
-
+      final useCase = ref.watch(updateRecipeCookedStatusUseCaseProvider);
+      useCase.call(newStatus, id);
       ref.invalidate(recipesByCategoryProvider);
     } catch (e, _) {
       state = AsyncData(oldRecipe);
