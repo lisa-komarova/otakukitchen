@@ -1,4 +1,4 @@
-class IngredientInRecipe {
+class IngredientInRecipeModel {
   final int id;
   final int groupId;
   final int ingredientId;
@@ -7,7 +7,7 @@ class IngredientInRecipe {
   final String? unit;
   final String? note;
 
-  const IngredientInRecipe({
+  const IngredientInRecipeModel({
     required this.id,
     required this.groupId,
     required this.ingredientId,
@@ -17,8 +17,8 @@ class IngredientInRecipe {
     this.note,
   });
 
-  factory IngredientInRecipe.fromMap(Map<String, dynamic> map) {
-    return IngredientInRecipe(
+  factory IngredientInRecipeModel.fromMap(Map<String, dynamic> map) {
+    return IngredientInRecipeModel(
       id: map['id'] as int,
       groupId: map['group_id'] as int,
       ingredientId: map['ingredient_id'] as int,

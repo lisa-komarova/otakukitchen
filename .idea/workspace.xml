@@ -5,21 +5,44 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8f0422b3-0848-4a6a-bcdc-8fbaeee799c6" name="Changes" comment="refactor: change picture's location">
-      <change afterPath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/providers/get_categories_provider.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/providers/get_favourite_recipes_provider.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/providers/get_recipe_details_provider.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/providers/get_recipes_by_category_provider.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/providers/update_recipe_favourite_status_provider.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/features/recipes/data/models/recipe_card_info_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/features/recipes/domain/entities/recipe_card_info.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/release/app-release.aab" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/release/app-release.aab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/categories_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/categories_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/categories_provider.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/categories_provider.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/icons/drinks.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/icons/drinks.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/mappers/ingredient_mapper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/mappers/ingredient_mapper.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/mappers/recipe_section_mapper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/mappers/recipe_section_mapper.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/models/anime_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/models/anime_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/models/category_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/models/category_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/models/ingredient_group.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/models/ingredient_group_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/models/ingredient_in_recipe.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/models/ingredient_in_recipe_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/models/ingredient_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/models/ingredient_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/models/recipe_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/models/recipe_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/models/recipe_section.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/models/recipe_section_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/models/step.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/models/step_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/repositories/recipe_repository_impl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/repositories/recipe_repository_impl.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/sources/recipe_local_datasource.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/sources/recipe_local_datasource.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/domain/entities/recipe_entity.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/domain/entities/recipe_entity.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/domain/repositories/recipe_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/domain/repositories/recipe_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/get_cooked_recipes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/get_cooked_recipes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/get_favourite_recipes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/get_favourite_recipes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/get_recipes_by_category.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/get_recipes_by_category.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/search_recipes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/domain/usecases/search_recipes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/search_recipes_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/search_recipes_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/cooked_recipes_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/cooked_recipes_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/cooked_recipes_provider.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/cooked_recipes_provider.g.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/favourite_recipes_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/favourite_recipes_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipe_details_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipe_details_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/favourite_recipes_provider.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/favourite_recipes_provider.g.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipes_by_category_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipes_by_category_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipes_by_category_provider.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipes_by_category_provider.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/search_providers/search_recipes_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/search_providers/search_recipes_provider.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/search_providers/search_recipes_provider.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/search_providers/search_recipes_provider.g.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/features/recipes/data/models_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/features/recipes/data/models_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/features/recipes/data/repositories/recipe_repository_impl_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/features/recipes/data/repositories/recipe_repository_impl_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/features/recipes/data/sources/recipe_local_datasource_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/features/recipes/data/sources/recipe_local_datasource_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/features/recipes/domain/get_recipes_by_category_usecase_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/features/recipes/domain/get_recipes_by_category_usecase_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/features/recipes/domain/search_recipes_usecase_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/features/recipes/domain/search_recipes_usecase_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,8 +108,11 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Flutter Test.getRecipesByCategory.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.should correctly call rawQuery with level filter and return list of card models.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter Test.should execute correct SQL query for recipe name search.executor&quot;: &quot;Run&quot;,
     &quot;Flutter Test.should return recipes only from the selected category ID.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter Test.tests in test.executor&quot;: &quot;Coverage&quot;,
+    &quot;Flutter Test.tests in test.executor&quot;: &quot;Run&quot;,
     &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -117,6 +143,24 @@
     </key>
   </component>
   <component name="RunManager" selected="Flutter.main.dart">
+    <configuration name="getRecipesByCategory" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="getRecipesByCategory" />
+      <option name="testFile" value="$PROJECT_DIR$/test/features/recipes/data/repositories/recipe_repository_impl_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="should correctly call rawQuery with level filter and return list of card models" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="should correctly call rawQuery with level filter and return list of card models" />
+      <option name="testFile" value="$PROJECT_DIR$/test/features/recipes/data/sources/recipe_local_datasource_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
+    <configuration name="should execute correct SQL query for recipe name search" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
+      <option name="testName" value="should execute correct SQL query for recipe name search" />
+      <option name="testFile" value="$PROJECT_DIR$/test/features/recipes/data/sources/recipe_local_datasource_test.dart" />
+      <option name="useRegexp" value="false" />
+      <method v="2" />
+    </configuration>
     <configuration name="should return recipes only from the selected category ID" type="FlutterTestConfigType" factoryName="Flutter Test" temporary="true" nameIsGenerated="true">
       <option name="testName" value="should return recipes only from the selected category ID" />
       <option name="testFile" value="$PROJECT_DIR$/test/features/recipes/data/sources/recipe_local_datasource_test.dart" />
@@ -130,8 +174,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Flutter Test.should return recipes only from the selected category ID" />
         <item itemvalue="Flutter Test.tests in test" />
+        <item itemvalue="Flutter Test.should execute correct SQL query for recipe name search" />
+        <item itemvalue="Flutter Test.should correctly call rawQuery with level filter and return list of card models" />
+        <item itemvalue="Flutter Test.getRecipesByCategory" />
+        <item itemvalue="Flutter Test.should return recipes only from the selected category ID" />
       </list>
     </recent_temporary>
   </component>
@@ -189,7 +236,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart</url>
-          <line>51</line>
+          <line>52</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
@@ -203,9 +250,19 @@
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/test/features/recipes/data/sources/recipe_local_datasource_test.dart</url>
+          <line>346</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/pages/search_recipes_page.dart</url>
+          <line>311</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
           <url>file://$PROJECT_DIR$/lib/features/recipes/data/sources/recipe_local_datasource.dart</url>
-          <line>176</line>
-          <option name="timeStamp" value="13" />
+          <line>246</line>
+          <option name="timeStamp" value="17" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

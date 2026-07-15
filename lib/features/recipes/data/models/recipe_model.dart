@@ -1,4 +1,4 @@
-class Recipe {
+class RecipeModel {
   final int id;
   final String name;
   final String cookingTime;
@@ -11,7 +11,7 @@ class Recipe {
   final bool isCooked;
   final String? note;
 
-  const Recipe({
+  const RecipeModel({
     required this.id,
     required this.name,
     required this.cookingTime,
@@ -25,8 +25,8 @@ class Recipe {
     this.note,
   });
 
-  factory Recipe.fromMap(Map<String, dynamic> map) {
-    return Recipe(
+  factory RecipeModel.fromMap(Map<String, dynamic> map) {
+    return RecipeModel(
       id: map['id'] as int,
       name: map['name'] as String? ?? '',
       cookingTime: map['cooking_time'] as String? ?? '',

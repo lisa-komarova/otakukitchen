@@ -1,6 +1,6 @@
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_section_entity.dart';
-import 'package:otakukitchen/features/recipes/data/models/recipe_section.dart';
-import 'package:otakukitchen/features/recipes/data/models/step.dart';
+import 'package:otakukitchen/features/recipes/data/models/recipe_section_model.dart';
+import 'package:otakukitchen/features/recipes/data/models/step_model.dart';
 
 class RecipeSectionMapper {
   static List<RecipeSectionEntity> mapSections(

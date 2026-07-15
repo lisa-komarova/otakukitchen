@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:otakukitchen/features/recipes/data/models/anime_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/category_model.dart';
-import 'package:otakukitchen/features/recipes/data/models/ingredient_group.dart';
-import 'package:otakukitchen/features/recipes/data/models/ingredient_in_recipe.dart';
+import 'package:otakukitchen/features/recipes/data/models/ingredient_group_model.dart';
+import 'package:otakukitchen/features/recipes/data/models/ingredient_in_recipe_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/ingredient_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/recipe_model.dart';
-import 'package:otakukitchen/features/recipes/data/models/recipe_section.dart';
-import 'package:otakukitchen/features/recipes/data/models/step.dart';
+import 'package:otakukitchen/features/recipes/data/models/recipe_section_model.dart';
+import 'package:otakukitchen/features/recipes/data/models/step_model.dart';
 
 void main() {
   group('Anime.fromMap', () {
@@ -18,7 +18,7 @@ void main() {
         'episode': 'Episode 1',
       };
 
-      final anime = Anime.fromMap(map);
+      final anime = AnimeModel.fromMap(map);
 
       expect(anime.id, 1);
       expect(anime.title, 'Naruto');
@@ -34,7 +34,7 @@ void main() {
         'episode': null,
       };
 
-      final anime = Anime.fromMap(map);
+      final anime = AnimeModel.fromMap(map);
 
       expect(anime.id, 2);
       expect(anime.title, 'One Piece');
@@ -50,7 +50,7 @@ void main() {
         'episode': 'Ep 5',
       };
 
-      final anime = Anime.fromMap(map);
+      final anime = AnimeModel.fromMap(map);
 
       expect(anime.id, 3);
       expect(anime.title, ''); // важно
@@ -61,14 +61,14 @@ void main() {
     test('should throw if id is missing or not int', () {
       final map = {'title': 'Bleach'};
 
-      expect(() => Anime.fromMap(map), throwsA(isA<TypeError>()));
+      expect(() => AnimeModel.fromMap(map), throwsA(isA<TypeError>()));
     });
   });
   group('Category.fromMap', () {
     test('should correctly parse full map', () {
       final map = {'id': 1, 'name': 'Desserts', 'icon': 'cake'};
 
-      final category = Category.fromMap(map);
+      final category = CategoryModel.fromMap(map);
 
       expect(category.id, 1);
       expect(category.name, 'Desserts');
@@ -78,7 +78,7 @@ void main() {
     test('should set empty string if name and icon are null', () {
       final map = {'id': 2, 'name': null, 'icon': null};
 
-      final category = Category.fromMap(map);
+      final category = CategoryModel.fromMap(map);
 
       expect(category.id, 2);
       expect(category.name, '');
@@ -88,7 +88,7 @@ void main() {
     test('should handle missing optional fields (name, icon)', () {
       final map = {'id': 3};
 
-      final category = Category.fromMap(map);
+      final category = CategoryModel.fromMap(map);
 
       expect(category.id, 3);
       expect(category.name, '');
@@ -98,7 +98,7 @@ void main() {
     test('should throw if id is missing or not int', () {
       final map = {'name': 'Breakfast', 'icon': 'sun'};
 
-      expect(() => Category.fromMap(map), throwsA(isA<TypeError>()));
+      expect(() => CategoryModel.fromMap(map), throwsA(isA<TypeError>()));
     });
   });
   group('IngredientGroup.fromMap', () {
@@ -110,7 +110,7 @@ void main() {
         'order_index': 2,
       };
 
-      final group = IngredientGroup.fromMap(map);
+      final group = IngredientGroupModel.fromMap(map);
 
       expect(group.id, 1);
       expect(group.recipeId, 10);
@@ -126,7 +126,7 @@ void main() {
         'order_index': null,
       };
 
-      final group = IngredientGroup.fromMap(map);
+      final group = IngredientGroupModel.fromMap(map);
 
       expect(group.id, 2);
       expect(group.recipeId, 20);
@@ -137,7 +137,7 @@ void main() {
     test('should handle missing optional fields (title, order_index)', () {
       final map = {'id': 3, 'recipe_id': 30};
 
-      final group = IngredientGroup.fromMap(map);
+      final group = IngredientGroupModel.fromMap(map);
 
       expect(group.id, 3);
       expect(group.recipeId, 30);
@@ -148,7 +148,7 @@ void main() {
     test('should throw if required fields are missing or invalid', () {
       final map = {'title': 'Something'};
 
-      expect(() => IngredientGroup.fromMap(map), throwsA(isA<TypeError>()));
+      expect(() => IngredientGroupModel.fromMap(map), throwsA(isA<TypeError>()));
     });
   });
   group('IngredientInRecipe.fromMap', () {
@@ -163,7 +163,7 @@ void main() {
         'note': 'optional',
       };
 
-      final ingredient = IngredientInRecipe.fromMap(map);
+      final ingredient = IngredientInRecipeModel.fromMap(map);
 
       expect(ingredient.id, 1);
       expect(ingredient.groupId, 10);
@@ -185,7 +185,7 @@ void main() {
         'note': null,
       };
 
-      final ingredient = IngredientInRecipe.fromMap(map);
+      final ingredient = IngredientInRecipeModel.fromMap(map);
 
       expect(ingredient.id, 2);
       expect(ingredient.groupId, 20);
@@ -204,7 +204,7 @@ void main() {
         'display_name': null,
       };
 
-      final ingredient = IngredientInRecipe.fromMap(map);
+      final ingredient = IngredientInRecipeModel.fromMap(map);
 
       expect(ingredient.id, 3);
       expect(ingredient.groupId, 30);
@@ -218,7 +218,7 @@ void main() {
     test('should throw if required fields are missing or invalid', () {
       final map = {'display_name': 'Milk'};
 
-      expect(() => IngredientInRecipe.fromMap(map), throwsA(isA<TypeError>()));
+      expect(() => IngredientInRecipeModel.fromMap(map), throwsA(isA<TypeError>()));
     });
   });
   group('Ingredient.fromMap', () {
@@ -228,7 +228,7 @@ void main() {
         'name': 'Flour',
       };
 
-      final ingredient = Ingredient.fromMap(map);
+      final ingredient = IngredientModel.fromMap(map);
 
       expect(ingredient.id, 1);
       expect(ingredient.name, 'Flour');
@@ -240,7 +240,7 @@ void main() {
         'name': null,
       };
 
-      final ingredient = Ingredient.fromMap(map);
+      final ingredient = IngredientModel.fromMap(map);
 
       expect(ingredient.id, 2);
       expect(ingredient.name, '');
@@ -251,7 +251,7 @@ void main() {
         'id': 3,
       };
 
-      final ingredient = Ingredient.fromMap(map);
+      final ingredient = IngredientModel.fromMap(map);
 
       expect(ingredient.id, 3);
       expect(ingredient.name, '');
@@ -263,7 +263,7 @@ void main() {
       };
 
       expect(
-        () => Ingredient.fromMap(map),
+        () => IngredientModel.fromMap(map),
         throwsA(isA<TypeError>()),
       );
     });
@@ -284,7 +284,7 @@ void main() {
         'note': 'Best served hot',
       };
 
-      final recipe = Recipe.fromMap(map);
+      final recipe = RecipeModel.fromMap(map);
 
       expect(recipe.id, 1);
       expect(recipe.name, 'Ramen');
@@ -314,7 +314,7 @@ void main() {
         'note': null,
       };
 
-      final recipe = Recipe.fromMap(map);
+      final recipe = RecipeModel.fromMap(map);
 
       expect(recipe.id, 2);
       expect(recipe.name, '');
@@ -334,8 +334,8 @@ void main() {
 
       final mapFalse = {'id': 4, 'is_favourite': 0};
 
-      final recipeTrue = Recipe.fromMap(mapTrue);
-      final recipeFalse = Recipe.fromMap(mapFalse);
+      final recipeTrue = RecipeModel.fromMap(mapTrue);
+      final recipeFalse = RecipeModel.fromMap(mapFalse);
 
       expect(recipeTrue.isFavourite, true);
       expect(recipeFalse.isFavourite, false);
@@ -346,8 +346,8 @@ void main() {
 
       final mapFalse = {'id': 4, 'is_cooked': 0};
 
-      final recipeTrue = Recipe.fromMap(mapTrue);
-      final recipeFalse = Recipe.fromMap(mapFalse);
+      final recipeTrue = RecipeModel.fromMap(mapTrue);
+      final recipeFalse = RecipeModel.fromMap(mapFalse);
 
       expect(recipeTrue.isCooked, true);
       expect(recipeFalse.isCooked, false);
@@ -356,7 +356,7 @@ void main() {
     test('should handle missing optional fields', () {
       final map = {'id': 5};
 
-      final recipe = Recipe.fromMap(map);
+      final recipe = RecipeModel.fromMap(map);
 
       expect(recipe.id, 5);
       expect(recipe.name, '');
@@ -374,7 +374,7 @@ void main() {
     test('should throw if id is missing or invalid', () {
       final map = {'name': 'Sushi'};
 
-      expect(() => Recipe.fromMap(map), throwsA(isA<TypeError>()));
+      expect(() => RecipeModel.fromMap(map), throwsA(isA<TypeError>()));
     });
   });
 

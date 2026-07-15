@@ -6,7 +6,7 @@ part of 'recipes_by_category_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$recipesByCategoryHash() => r'eff5bf71d176c03dec70b63f93fcbed54c0c0d41';
+String _$recipesByCategoryHash() => r'4d52de199dbd4ad0dfda2dd627ca131e41b9eb16';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,7 +34,8 @@ class _SystemHash {
 const recipesByCategoryProvider = RecipesByCategoryFamily();
 
 /// See also [recipesByCategory].
-class RecipesByCategoryFamily extends Family<AsyncValue<List<RecipeEntity>>> {
+class RecipesByCategoryFamily
+    extends Family<AsyncValue<List<RecipeCardInfoEntity>>> {
   /// See also [recipesByCategory].
   const RecipesByCategoryFamily();
 
@@ -67,7 +68,7 @@ class RecipesByCategoryFamily extends Family<AsyncValue<List<RecipeEntity>>> {
 
 /// See also [recipesByCategory].
 class RecipesByCategoryProvider
-    extends AutoDisposeFutureProvider<List<RecipeEntity>> {
+    extends AutoDisposeFutureProvider<List<RecipeCardInfoEntity>> {
   /// See also [recipesByCategory].
   RecipesByCategoryProvider(String categoryName)
     : this._internal(
@@ -97,7 +98,8 @@ class RecipesByCategoryProvider
 
   @override
   Override overrideWith(
-    FutureOr<List<RecipeEntity>> Function(RecipesByCategoryRef provider) create,
+    FutureOr<List<RecipeCardInfoEntity>> Function(RecipesByCategoryRef provider)
+    create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -114,7 +116,7 @@ class RecipesByCategoryProvider
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<RecipeEntity>> createElement() {
+  AutoDisposeFutureProviderElement<List<RecipeCardInfoEntity>> createElement() {
     return _RecipesByCategoryProviderElement(this);
   }
 
@@ -135,13 +137,14 @@ class RecipesByCategoryProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin RecipesByCategoryRef on AutoDisposeFutureProviderRef<List<RecipeEntity>> {
+mixin RecipesByCategoryRef
+    on AutoDisposeFutureProviderRef<List<RecipeCardInfoEntity>> {
   /// The parameter `categoryName` of this provider.
   String get categoryName;
 }
 
 class _RecipesByCategoryProviderElement
-    extends AutoDisposeFutureProviderElement<List<RecipeEntity>>
+    extends AutoDisposeFutureProviderElement<List<RecipeCardInfoEntity>>
     with RecipesByCategoryRef {
   _RecipesByCategoryProviderElement(super.provider);
 

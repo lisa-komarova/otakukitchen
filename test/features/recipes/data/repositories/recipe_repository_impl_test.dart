@@ -4,11 +4,12 @@ import 'package:otakukitchen/features/recipes/data/mappers/ingredient_mapper.dar
 import 'package:otakukitchen/features/recipes/data/mappers/recipe_section_mapper.dart';
 import 'package:otakukitchen/features/recipes/data/models/anime_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/category_model.dart';
-import 'package:otakukitchen/features/recipes/data/models/ingredient_group.dart';
-import 'package:otakukitchen/features/recipes/data/models/ingredient_in_recipe.dart';
+import 'package:otakukitchen/features/recipes/data/models/ingredient_group_model.dart';
+import 'package:otakukitchen/features/recipes/data/models/ingredient_in_recipe_model.dart';
+import 'package:otakukitchen/features/recipes/data/models/recipe_card_info_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/recipe_model.dart';
-import 'package:otakukitchen/features/recipes/data/models/recipe_section.dart';
-import 'package:otakukitchen/features/recipes/data/models/step.dart';
+import 'package:otakukitchen/features/recipes/data/models/recipe_section_model.dart';
+import 'package:otakukitchen/features/recipes/data/models/step_model.dart';
 
 import 'package:otakukitchen/features/recipes/data/repositories/recipe_repository_impl.dart';
 import 'package:otakukitchen/features/recipes/data/sources/recipe_local_datasource.dart';
@@ -29,7 +30,7 @@ void main() {
   test('should return fully mapped RecipeEntity', () async {
     // arrange
     when(() => mockDataSource.getRecipeById(recipeId)).thenAnswer(
-      (_) async => Recipe(
+      (_) async => RecipeModel(
         id: 1,
         name: 'Ramen',
         cookingTime: '30 min',
@@ -43,11 +44,11 @@ void main() {
 
     when(
       () => mockDataSource.getCategory(10),
-    ).thenAnswer((_) async => Category(id: 10, name: 'Main', icon: '🍜'));
+    ).thenAnswer((_) async => CategoryModel(id: 10, name: 'Main', icon: '🍜'));
 
     when(() => mockDataSource.getAnimesByRecipe(recipeId)).thenAnswer(
       (_) async => [
-        Anime(
+        AnimeModel(
           id: 1,
           title: 'Naruto',
           sceneDescription: 'Ramen scene',
@@ -58,13 +59,18 @@ void main() {
 
     when(() => mockDataSource.getIngredientGroups(recipeId)).thenAnswer(
       (_) async => [
-        IngredientGroup(id: 1, recipeId: 1, title: 'Group 1', orderIndex: 0),
+        IngredientGroupModel(
+          id: 1,
+          recipeId: 1,
+          title: 'Group 1',
+          orderIndex: 0,
+        ),
       ],
     );
 
     when(() => mockDataSource.getIngredientsInRecipe(recipeId)).thenAnswer(
       (_) async => [
-        IngredientInRecipe(
+        IngredientInRecipeModel(
           id: 1,
           groupId: 1,
           ingredientId: 1,
@@ -112,7 +118,7 @@ void main() {
 
   test('should set "по вкусу" when quantity and unit are null', () async {
     when(() => mockDataSource.getRecipeById(recipeId)).thenAnswer(
-      (_) async => Recipe(
+      (_) async => RecipeModel(
         id: 1,
         name: 'Ramen',
         cookingTime: '30 min',
@@ -126,7 +132,7 @@ void main() {
 
     when(
       () => mockDataSource.getCategory(1),
-    ).thenAnswer((_) async => Category(id: 1, name: '', icon: ''));
+    ).thenAnswer((_) async => CategoryModel(id: 1, name: '', icon: ''));
 
     when(
       () => mockDataSource.getAnimesByRecipe(recipeId),
@@ -134,7 +140,7 @@ void main() {
 
     when(() => mockDataSource.getIngredientGroups(recipeId)).thenAnswer(
       (_) async => [
-        IngredientGroup(
+        IngredientGroupModel(
           id: 1,
           recipeId: recipeId,
           title: 'Test',
@@ -145,7 +151,7 @@ void main() {
 
     when(() => mockDataSource.getIngredientsInRecipe(recipeId)).thenAnswer(
       (_) async => [
-        IngredientInRecipe(
+        IngredientInRecipeModel(
           id: 1,
           groupId: 1,
           ingredientId: 1,
@@ -169,11 +175,11 @@ void main() {
 
   test('should map ingredient groups correctly', () {
     final groups = [
-      IngredientGroup(id: 1, recipeId: 1, title: 'Group', orderIndex: 0),
+      IngredientGroupModel(id: 1, recipeId: 1, title: 'Group', orderIndex: 0),
     ];
 
     final items = [
-      IngredientInRecipe(
+      IngredientInRecipeModel(
         id: 1,
         groupId: 1,
         ingredientId: 1,
@@ -223,8 +229,8 @@ void main() {
 
   group('getCategories', () {
     final tCategoryModels = [
-      Category(id: 1, name: 'Main', icon: '🍜'),
-      Category(id: 2, name: 'Desserts', icon: '🍰'),
+      CategoryModel(id: 1, name: 'Main', icon: '🍜'),
+      CategoryModel(id: 2, name: 'Desserts', icon: '🍰'),
     ];
 
     test(
@@ -263,69 +269,58 @@ void main() {
     const tCategory = 'Main';
 
     final tRecipeModels = [
-      Recipe(
+      RecipeCardInfoModel(
         id: 1,
         name: 'Ramen',
         cookingTime: '30m',
-        level: 'easy',
-        categoryId: 1,
         imageUrl: '',
-        isFavourite: false,
-        isCooked: false,
+        animeTitle: 'Naruto',
       ),
-      Recipe(
+      RecipeCardInfoModel(
         id: 2,
         name: 'Sushi',
         cookingTime: '40m',
-        level: 'hard',
-        categoryId: 1,
         imageUrl: '',
-        isFavourite: false,
-        isCooked: false,
+        animeTitle: 'Naruto',
       ),
     ];
 
-    test('should fetch recipes and then fetch details for each recipe', () async {
-      // arrange
-      when(
-        () => mockDataSource.getRecipesByCategory(tCategory),
-      ).thenAnswer((_) async => tRecipeModels);
-      when(() => mockDataSource.getRecipeById(any())).thenAnswer((
-        invocation,
-      ) async {
-        final id = invocation.positionalArguments[0] as int;
-        return tRecipeModels.firstWhere((r) => r.id == id);
-      });
+    test(
+      'should fetch recipes',
+      () async {
+        // arrange
+        when(
+          () => mockDataSource.getRecipesByCategory(tCategory),
+        ).thenAnswer((_) async => tRecipeModels);
 
-      when(
-        () => mockDataSource.getCategory(any()),
-      ).thenAnswer((_) async => Category(id: 1, name: 'Main', icon: ''));
-      when(
-        () => mockDataSource.getAnimesByRecipe(any()),
-      ).thenAnswer((_) async => []);
-      when(
-        () => mockDataSource.getIngredientGroups(any()),
-      ).thenAnswer((_) async => []);
-      when(
-        () => mockDataSource.getIngredientsInRecipe(any()),
-      ).thenAnswer((_) async => []);
-      when(
-        () => mockDataSource.getRecipeSections(any()),
-      ).thenAnswer((_) async => []);
-      when(() => mockDataSource.getSteps(any())).thenAnswer((_) async => []);
+        when(
+          () => mockDataSource.getCategory(any()),
+        ).thenAnswer((_) async => CategoryModel(id: 1, name: 'Main', icon: ''));
+        when(
+          () => mockDataSource.getAnimesByRecipe(any()),
+        ).thenAnswer((_) async => []);
+        when(
+          () => mockDataSource.getIngredientGroups(any()),
+        ).thenAnswer((_) async => []);
+        when(
+          () => mockDataSource.getIngredientsInRecipe(any()),
+        ).thenAnswer((_) async => []);
+        when(
+          () => mockDataSource.getRecipeSections(any()),
+        ).thenAnswer((_) async => []);
+        when(() => mockDataSource.getSteps(any())).thenAnswer((_) async => []);
 
-      // act
-      final result = await repository.getRecipesByCategory(tCategory);
+        // act
+        final result = await repository.getRecipesByCategory(tCategory);
 
-      // assert
-      expect(result.length, 2);
-      expect(result[0].id, 1);
-      expect(result[1].id, 2);
+        // assert
+        expect(result.length, 2);
+        expect(result[0].id, 1);
+        expect(result[1].id, 2);
 
-      verify(() => mockDataSource.getRecipesByCategory(tCategory)).called(1);
-      verify(() => mockDataSource.getRecipeById(1)).called(1);
-      verify(() => mockDataSource.getRecipeById(2)).called(1);
-    });
+        verify(() => mockDataSource.getRecipesByCategory(tCategory)).called(1);
+      },
+    );
   });
   group('updateRecipeFavouriteStatus', () {
     const tRecipeId = 1;
@@ -386,10 +381,7 @@ void main() {
 
         // assert
         verify(
-          () => mockDataSource.updateRecipeCookedStatus(
-            tIsCooked,
-            tRecipeId,
-          ),
+          () => mockDataSource.updateRecipeCookedStatus(tIsCooked, tRecipeId),
         ).called(1);
       },
     );
@@ -406,8 +398,7 @@ void main() {
       // assert
       expect(() => call(tIsCooked, tRecipeId), throwsA(isA<Exception>()));
       verify(
-        () =>
-            mockDataSource.updateRecipeCookedStatus(tIsCooked, tRecipeId),
+        () => mockDataSource.updateRecipeCookedStatus(tIsCooked, tRecipeId),
       ).called(1);
     });
   });
@@ -418,7 +409,7 @@ void main() {
     const tCategories = "'main'";
 
     final tRecipeModels = [
-      Recipe(
+      RecipeModel(
         id: 1,
         name: 'Ramen',
         categoryId: 1,
@@ -428,7 +419,7 @@ void main() {
         isFavourite: false,
         isCooked: false,
       ),
-      Recipe(
+      RecipeModel(
         id: 2,
         name: 'Soup',
         categoryId: 1,
@@ -442,7 +433,7 @@ void main() {
 
     void mockRecipeDetails(int id, String name) {
       when(() => mockDataSource.getRecipeById(id)).thenAnswer(
-        (_) async => Recipe(
+        (_) async => RecipeModel(
           id: id,
           name: name,
           categoryId: 1,
@@ -455,7 +446,7 @@ void main() {
       );
       when(
         () => mockDataSource.getCategory(any()),
-      ).thenAnswer((_) async => Category(id: 1, name: '', icon: ''));
+      ).thenAnswer((_) async => CategoryModel(id: 1, name: '', icon: ''));
       when(
         () => mockDataSource.getAnimesByRecipe(id),
       ).thenAnswer((_) async => []);
@@ -470,75 +461,6 @@ void main() {
       ).thenAnswer((_) async => []);
       when(() => mockDataSource.getSteps(id)).thenAnswer((_) async => []);
     }
-
-    test(
-      'searchRecipesByAnimeTitle should fetch details for all found recipes',
-      () async {
-        // arrange
-        when(
-          () => mockDataSource.searchRecipesByAnimeTitle(
-            tQuery,
-            tLevels,
-            tCategories,
-          ),
-        ).thenAnswer((_) async => tRecipeModels);
-
-        for (var model in tRecipeModels) {
-          mockRecipeDetails(model.id, model.name);
-        }
-
-        // act
-        final result = await repository.searchRecipesByAnimeTitle(
-          tQuery,
-          tLevels,
-          tCategories,
-        );
-
-        // assert
-        expect(result.length, 2);
-        expect(result[0].name, 'Ramen');
-        expect(result[1].id, 2);
-        verify(
-          () => mockDataSource.searchRecipesByAnimeTitle(
-            tQuery,
-            tLevels,
-            tCategories,
-          ),
-        ).called(1);
-        verify(() => mockDataSource.getRecipeById(1)).called(1);
-        verify(() => mockDataSource.getRecipeById(2)).called(1);
-      },
-    );
-
-    test(
-      'searchRecipesByName should fetch details for all found recipes',
-      () async {
-        // arrange
-        when(
-          () =>
-              mockDataSource.searchRecipesByName(tQuery, tLevels, tCategories),
-        ).thenAnswer((_) async => tRecipeModels);
-
-        for (var model in tRecipeModels) {
-          mockRecipeDetails(model.id, model.name);
-        }
-
-        // act
-        final result = await repository.searchRecipesByName(
-          tQuery,
-          tLevels,
-          tCategories,
-        );
-
-        // assert
-        expect(result.length, 2);
-        verify(
-          () =>
-              mockDataSource.searchRecipesByName(tQuery, tLevels, tCategories),
-        ).called(1);
-        verify(() => mockDataSource.getRecipeById(1)).called(1);
-      },
-    );
   });
   group('getRecipesAmount', () {
     test(
@@ -571,7 +493,5 @@ void main() {
         expect(() => repository.getRecipesAmount(), throwsA(isA<Exception>()));
       },
     );
-  }); 
-  
-
+  });
 }

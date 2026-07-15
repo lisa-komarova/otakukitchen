@@ -1,10 +1,10 @@
-class Ingredient {
+class IngredientModel {
   final int id;
   final String name;
 
-  const Ingredient({required this.id, required this.name});
+  const IngredientModel({required this.id, required this.name});
 
-  factory Ingredient.fromMap(Map<String, dynamic> map) {
-    return Ingredient(id: map['id'] as int, name: map['name'] as String? ?? '');
+  factory IngredientModel.fromMap(Map<String, dynamic> map) {
+    return IngredientModel(id: map['id'] as int, name: map['name'] as String? ?? '');
   }
 }

@@ -1,14 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:otakukitchen/features/recipes/data/models/recipe_card_info_model.dart';
 import 'package:otakukitchen/features/recipes/data/sources/recipe_local_datasource.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:otakukitchen/features/recipes/data/models/anime_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/category_model.dart';
-import 'package:otakukitchen/features/recipes/data/models/ingredient_group.dart';
-import 'package:otakukitchen/features/recipes/data/models/ingredient_in_recipe.dart';
+import 'package:otakukitchen/features/recipes/data/models/ingredient_group_model.dart';
+import 'package:otakukitchen/features/recipes/data/models/ingredient_in_recipe_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/recipe_model.dart';
-import 'package:otakukitchen/features/recipes/data/models/recipe_section.dart';
-import 'package:otakukitchen/features/recipes/data/models/step.dart';
+import 'package:otakukitchen/features/recipes/data/models/recipe_section_model.dart';
+import 'package:otakukitchen/features/recipes/data/models/step_model.dart';
 
 class MockDatabase extends Mock implements Database {}
 
@@ -44,7 +45,7 @@ void main() {
 
       final result = await dataSource.getRecipeById(1);
 
-      expect(result, isA<Recipe>());
+      expect(result, isA<RecipeModel>());
       expect(result.id, 1);
       expect(result.name, 'Ramen');
       expect(result.isFavourite, true);
@@ -73,7 +74,7 @@ void main() {
 
       final result = await dataSource.getCategory(1);
 
-      expect(result, isA<Category>());
+      expect(result, isA<CategoryModel>());
       expect(result.id, 1);
       expect(result.name, 'Dessert');
     });
@@ -111,7 +112,7 @@ void main() {
 
       final result = await dataSource.getAnimesByRecipe(1);
 
-      expect(result, isA<List<Anime>>());
+      expect(result, isA<List<AnimeModel>>());
       expect(result.length, 2);
       expect(result.first.title, 'Naruto');
     });
@@ -133,7 +134,7 @@ void main() {
 
       final result = await dataSource.getIngredientGroups(1);
 
-      expect(result, isA<List<IngredientGroup>>());
+      expect(result, isA<List<IngredientGroupModel>>());
       expect(result.length, 2);
     });
 
@@ -154,7 +155,7 @@ void main() {
 
       final result = await dataSource.getIngredientsInRecipe(1);
 
-      expect(result, isA<List<IngredientInRecipe>>());
+      expect(result, isA<List<IngredientInRecipeModel>>());
       expect(result.first.displayName, 'Sugar');
     });
 
@@ -206,7 +207,7 @@ void main() {
       final result = await dataSource.getCategories();
 
       // assert
-      expect(result, isA<List<Category>>());
+      expect(result, isA<List<CategoryModel>>());
       expect(result.length, 2);
       expect(result[0].name, 'Main');
       expect(result[1].icon, '🍰');
@@ -221,14 +222,12 @@ void main() {
           'id': 1,
           'name': 'Рамен',
           'cookingTime': '30 мин',
-          'level': 'easy',
           'imageUrl': 'url',
-          'is_favourite': 1,
-          'category_id': 10,
+          'animeTitle': 'Naruto',
         },
       ];
 
-      test('should perform a rawQuery and return a list of Recipes', () async {
+      test('should perform a rawQuery and return a list of RecipesCardInfo', () async {
         // arrange
         when(
           () => mockDb.rawQuery(any(), any()),
@@ -240,10 +239,9 @@ void main() {
         // assert
         verify(() => mockDb.rawQuery(any(), [tCategory])).called(1);
 
-        expect(result, isA<List<Recipe>>());
+        expect(result, isA<List<RecipeCardInfoModel>>());
         expect(result.length, 1);
         expect(result.first.name, 'Рамен');
-        expect(result.first.isFavourite, true);
       });
 
       test('should throw an exception when database execution fails', () async {
@@ -337,7 +335,7 @@ void main() {
 
       // Assert
       verify(
-        () => mockDb.rawQuery(any(that: contains('WHERE name LIKE ?')), [
+        () => mockDb.rawQuery(any(that: contains('WHERE r.name LIKE ?')), [
           '%Ramen%',
           '',
           '',
@@ -347,33 +345,36 @@ void main() {
   });
   group('Levels Filtering', () {
     test(
-      'should return only "easy" recipes when level filter is set to "easy"',
-      () async {
-        //  ARRANGE
-        when(() => mockDb.rawQuery(any(), any())).thenAnswer(
-          (_) async => [
-            {
-              'id': 1,
-              'name': 'Miso Ramen',
-              'level': 'easy',
-              'categoryId': 1,
-              'cookingTime': '20',
-              'imageUrl': '',
-              'isFavourite': 0,
-            },
-          ],
-        );
+      'should correctly call rawQuery with level filter and return list of card models',
+          () async {
+        final mockRawDbResult = [
+          {
+            'id': 1,
+            'name': 'Miso Ramen',
+            'level': 'easy',
+            'category_id': 1,
+            'cooking_time': '20',
+            'image_url': '',
+          },
+        ];
 
-        // ACT
+        when(() => mockDb.rawQuery(any(), any()))
+            .thenAnswer((_) async => mockRawDbResult);
+
         final result = await dataSource.searchRecipesByName('', "'easy'", '');
 
-        // ASSERT
-        expect(result.every((r) => r.level == 'easy'), isTrue);
-        expect(result.any((r) => r.name == 'Miso Ramen'), isTrue);
+        expect(result.length, 1);
+        expect(result.first.name, 'Miso Ramen');
+        expect(result.first.id, 1);
 
-        verify(() => mockDb.rawQuery(any(), any())).called(1);
-      },
+        verify(() => mockDb.rawQuery(
+          any(),
+          any(that: contains("'easy'")), // Ищем строку с кавычками внутри
+        )).called(1);
+
+          },
     );
+
 
     test(
       'should return multiple levels when IN clause has multiple values',
@@ -561,43 +562,48 @@ void main() {
     );
 
     test(
-      'getFavouriteRecipes returns list of Recipe when items exist',
-      () async {
-        // arrange
+      'getFavouriteRecipes returns list of RecipeCardInfoModel when items exist',
+          () async {
         final favouriteMap = [tRawRecipesMaps[0]];
 
         when(
-          () => mockDb.rawQuery(any()),
+              () => mockDb.rawQuery(any()),
         ).thenAnswer((_) async => favouriteMap);
 
-        // act
         final result = await dataSource.getFavouriteRecipes();
 
-        // assert
-        expect(result, isA<List<Recipe>>());
+        expect(result, isA<List<RecipeCardInfoModel>>());
         expect(result.length, 1);
         expect(result.first.id, 1);
         expect(result.first.name, 'Ramen');
-        expect(result.first.isFavourite, true);
+        verify(() => mockDb.rawQuery(any())).called(1);
       },
     );
 
-    test('getCookedRecipes returns list of Recipe when items exist', () async {
-      // arrange
-      final cookedMap = [tRawRecipesMaps[1]];
+
+    test('getCookedRecipes returns list of RecipeCardInfoModel when items exist', () async {
+      final cookedMap = [
+        {
+          'id': 2,
+          'name': 'Soup',
+          'category_id': 1,
+          'cooking_time': '30',
+          'image_url': '',
+          'is_cooked': 1,
+        }
+      ];
 
       when(() => mockDb.rawQuery(any())).thenAnswer((_) async => cookedMap);
 
-      // act
       final result = await dataSource.getCookedRecipes();
 
-      // assert
-      expect(result, isA<List<Recipe>>());
+      expect(result, isA<List<RecipeCardInfoModel>>());
       expect(result.length, 1);
       expect(result.first.id, 2);
       expect(result.first.name, 'Soup');
-      expect(result.first.isCooked, true);
+      verify(() => mockDb.rawQuery(any())).called(1);
     });
+
   });
 
 

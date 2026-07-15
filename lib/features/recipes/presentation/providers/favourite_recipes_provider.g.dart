@@ -6,12 +6,12 @@ part of 'favourite_recipes_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$favouriteRecipesHash() => r'84251c39dab9e6243ea61d230cc09fae62f58e3e';
+String _$favouriteRecipesHash() => r'4e567dd43b88b4bbca0859e1673564e8f69a284d';
 
 /// See also [favouriteRecipes].
 @ProviderFor(favouriteRecipes)
 final favouriteRecipesProvider =
-    AutoDisposeFutureProvider<List<RecipeEntity>>.internal(
+    AutoDisposeFutureProvider<List<RecipeCardInfoEntity>>.internal(
       favouriteRecipes,
       name: r'favouriteRecipesProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -23,6 +23,7 @@ final favouriteRecipesProvider =
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef FavouriteRecipesRef = AutoDisposeFutureProviderRef<List<RecipeEntity>>;
+typedef FavouriteRecipesRef =
+    AutoDisposeFutureProviderRef<List<RecipeCardInfoEntity>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

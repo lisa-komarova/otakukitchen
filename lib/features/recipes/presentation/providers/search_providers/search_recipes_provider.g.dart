@@ -6,7 +6,7 @@ part of 'search_recipes_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchRecipesHash() => r'cbb4ffe9e2e05e4a6c33d7e947a034a8b9d7c200';
+String _$searchRecipesHash() => r'951aa9b471965713a5bdfa61ac24c9033308fee3';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -34,7 +34,8 @@ class _SystemHash {
 const searchRecipesProvider = SearchRecipesFamily();
 
 /// See also [searchRecipes].
-class SearchRecipesFamily extends Family<AsyncValue<List<RecipeEntity>>> {
+class SearchRecipesFamily
+    extends Family<AsyncValue<List<RecipeCardInfoEntity>>> {
   /// See also [searchRecipes].
   const SearchRecipesFamily();
 
@@ -82,7 +83,7 @@ class SearchRecipesFamily extends Family<AsyncValue<List<RecipeEntity>>> {
 
 /// See also [searchRecipes].
 class SearchRecipesProvider
-    extends AutoDisposeFutureProvider<List<RecipeEntity>> {
+    extends AutoDisposeFutureProvider<List<RecipeCardInfoEntity>> {
   /// See also [searchRecipes].
   SearchRecipesProvider({
     required String query,
@@ -131,7 +132,8 @@ class SearchRecipesProvider
 
   @override
   Override overrideWith(
-    FutureOr<List<RecipeEntity>> Function(SearchRecipesRef provider) create,
+    FutureOr<List<RecipeCardInfoEntity>> Function(SearchRecipesRef provider)
+    create,
   ) {
     return ProviderOverride(
       origin: this,
@@ -151,7 +153,7 @@ class SearchRecipesProvider
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<RecipeEntity>> createElement() {
+  AutoDisposeFutureProviderElement<List<RecipeCardInfoEntity>> createElement() {
     return _SearchRecipesProviderElement(this);
   }
 
@@ -178,7 +180,8 @@ class SearchRecipesProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin SearchRecipesRef on AutoDisposeFutureProviderRef<List<RecipeEntity>> {
+mixin SearchRecipesRef
+    on AutoDisposeFutureProviderRef<List<RecipeCardInfoEntity>> {
   /// The parameter `query` of this provider.
   String get query;
 
@@ -193,7 +196,7 @@ mixin SearchRecipesRef on AutoDisposeFutureProviderRef<List<RecipeEntity>> {
 }
 
 class _SearchRecipesProviderElement
-    extends AutoDisposeFutureProviderElement<List<RecipeEntity>>
+    extends AutoDisposeFutureProviderElement<List<RecipeCardInfoEntity>>
     with SearchRecipesRef {
   _SearchRecipesProviderElement(super.provider);
 

@@ -1,13 +1,14 @@
-import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/search_mode.dart';
 import 'package:otakukitchen/features/recipes/domain/repositories/recipe_repository.dart';
+
+import '../entities/recipe_card_info.dart';
 
 class SearchRecipesUseCase {
   final RecipeRepository repository;
 
   SearchRecipesUseCase(this.repository);
 
-  Future<List<RecipeEntity>> call({
+  Future<List<RecipeCardInfoEntity>> call({
     required String query,
     required SearchMode mode,
     String? levels,

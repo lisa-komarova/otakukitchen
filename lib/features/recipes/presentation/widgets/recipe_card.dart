@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:otakukitchen/core/theme.dart';
-import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/presentation/pages/recipe_details_page.dart';
 
+import '../../domain/entities/recipe_card_info.dart';
+
 class RecipeCard extends StatelessWidget {
-  final RecipeEntity recipe;
+  final RecipeCardInfoEntity recipe;
 
   const RecipeCard({super.key, required this.recipe});
 
@@ -71,7 +72,7 @@ class _RecipeImage extends StatelessWidget {
 }
 
 class _RecipeInfo extends StatelessWidget {
-  final RecipeEntity recipe;
+  final RecipeCardInfoEntity recipe;
   const _RecipeInfo({required this.recipe});
 
   @override
@@ -91,7 +92,7 @@ class _RecipeInfo extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         Text(
-          recipe.animes.first.title,
+          recipe.animeTitle,
           style: Theme.of(context).textTheme.bodySmall!.copyWith(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w300,

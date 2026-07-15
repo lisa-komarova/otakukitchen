@@ -1,5 +1,3 @@
-// domain/entities/recipe_entity.dart
-
 import 'package:otakukitchen/features/recipes/domain/entities/anime_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/category_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/ingredient_group_entity.dart';

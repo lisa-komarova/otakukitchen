@@ -2,12 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/anime_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/category_entity.dart';
+import 'package:otakukitchen/features/recipes/domain/entities/recipe_card_info.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/search_mode.dart';
 import 'package:otakukitchen/features/recipes/domain/repositories/recipe_repository.dart';
 import 'package:otakukitchen/features/recipes/domain/usecases/search_recipes.dart';
 
-// Создаем мок репозитория
 class MockRecipeRepository extends Mock implements RecipeRepository {}
 
 void main() {
@@ -25,17 +25,12 @@ void main() {
   const tCategoriesQuery = "'soup', 'main'";
 
   final tRecipes = [
-    RecipeEntity(
+    RecipeCardInfoEntity(
       id: 1,
       name: 'Тестовый сэндвич',
       cookingTime: '10',
-      level: 'easy',
       imageUrl: 'https://test.com',
-      isFavourite: false,isCooked: false,
-      category: CategoryEntity(id: 1, name: 'Завтрак', icon: ''),
-      animes: [AnimeEntity(id: 1, title: 'Название аниме')],
-      ingredientGroups: [],
-      sections: [],
+      animeTitle: 'Название аниме',
     ),
   ];
 

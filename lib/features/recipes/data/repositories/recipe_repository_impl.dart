@@ -6,6 +6,8 @@ import 'package:otakukitchen/features/recipes/domain/entities/category_entity.da
 import 'package:otakukitchen/features/recipes/domain/entities/anime_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/repositories/recipe_repository.dart';
 
+import '../../domain/entities/recipe_card_info.dart';
+
 class RecipeRepositoryImpl extends RecipeRepository {
   final RecipeLocalDataSource datasource;
 
@@ -67,10 +69,22 @@ class RecipeRepositoryImpl extends RecipeRepository {
   }
 
   @override
-  Future<List<RecipeEntity>> getRecipesByCategory(String category) async {
+  Future<List<RecipeCardInfoEntity>> getRecipesByCategory(
+    String category,
+  ) async {
     final recipes = await datasource.getRecipesByCategory(category);
 
-    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+    return recipes
+        .map(
+          (recipe) => RecipeCardInfoEntity(
+            id: recipe.id,
+            name: recipe.name,
+            cookingTime: recipe.cookingTime,
+            imageUrl: recipe.imageUrl,
+            animeTitle: recipe.animeTitle,
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -80,30 +94,48 @@ class RecipeRepositoryImpl extends RecipeRepository {
   ) async {
     await datasource.updateRecipeFavouriteStatus(isFavourite, recipeId);
   }
+
   @override
-  Future<void> updateRecipeCookedStatus(
-      bool isCooked,
-      int recipeId,
-      ) async {
+  Future<void> updateRecipeCookedStatus(bool isCooked, int recipeId) async {
     await datasource.updateRecipeCookedStatus(isCooked, recipeId);
   }
 
   @override
-  Future<List<RecipeEntity>> getFavouriteRecipes() async {
+  Future<List<RecipeCardInfoEntity>> getFavouriteRecipes() async {
     final recipes = await datasource.getFavouriteRecipes();
 
-    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+    return recipes
+        .map(
+          (recipe) => RecipeCardInfoEntity(
+        id: recipe.id,
+        name: recipe.name,
+        cookingTime: recipe.cookingTime,
+        imageUrl: recipe.imageUrl,
+        animeTitle: recipe.animeTitle,
+      ),
+    )
+        .toList();
   }
 
   @override
-  Future<List<RecipeEntity>> getCookedRecipes() async {
+  Future<List<RecipeCardInfoEntity>> getCookedRecipes() async {
     final recipes = await datasource.getCookedRecipes();
 
-    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+    return recipes
+        .map(
+          (recipe) => RecipeCardInfoEntity(
+        id: recipe.id,
+        name: recipe.name,
+        cookingTime: recipe.cookingTime,
+        imageUrl: recipe.imageUrl,
+        animeTitle: recipe.animeTitle,
+      ),
+    )
+        .toList();
   }
 
   @override
-  Future<List<RecipeEntity>> searchRecipesByAnimeTitle(
+  Future<List<RecipeCardInfoEntity>> searchRecipesByAnimeTitle(
     String query,
     String levels,
     String categories,
@@ -114,11 +146,21 @@ class RecipeRepositoryImpl extends RecipeRepository {
       categories,
     );
 
-    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+    return recipes
+        .map(
+          (recipe) => RecipeCardInfoEntity(
+        id: recipe.id,
+        name: recipe.name,
+        cookingTime: recipe.cookingTime,
+        imageUrl: recipe.imageUrl,
+        animeTitle: recipe.animeTitle,
+      ),
+    )
+        .toList();
   }
 
   @override
-  Future<List<RecipeEntity>> searchRecipesByName(
+  Future<List<RecipeCardInfoEntity>> searchRecipesByName(
     String query,
     String levels,
     String categories,
@@ -129,7 +171,17 @@ class RecipeRepositoryImpl extends RecipeRepository {
       categories,
     );
 
-    return Future.wait(recipes.map((recipe) => getRecipeDetails(recipe.id)));
+    return recipes
+        .map(
+          (recipe) => RecipeCardInfoEntity(
+        id: recipe.id,
+        name: recipe.name,
+        cookingTime: recipe.cookingTime,
+        imageUrl: recipe.imageUrl,
+        animeTitle: recipe.animeTitle,
+      ),
+    )
+        .toList();
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:otakukitchen/features/recipes/domain/entities/recipe_card_info.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/repositories/recipe_repository.dart';
 import 'package:otakukitchen/features/recipes/domain/usecases/get_recipes_by_category.dart';
@@ -18,7 +19,7 @@ void main() {
 
   const tCategory = 'Супы';
 
-  final tRecipesList = <RecipeEntity>[];
+  final tRecipesList = <RecipeCardInfoEntity>[];
 
   test('should get recipes for the category from the repository', () async {
     when(

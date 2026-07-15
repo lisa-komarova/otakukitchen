@@ -6,6 +6,8 @@ import 'package:otakukitchen/features/recipes/domain/entities/search_mode.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/search_providers/search_recipes_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/widgets/recipe_card.dart';
 
+import '../../domain/entities/recipe_card_info.dart';
+
 class SearchRecipesPage extends ConsumerStatefulWidget {
   const SearchRecipesPage({super.key});
 
@@ -23,9 +25,9 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
   @override
   Widget build(BuildContext context) {
     final Map<String, String> difficultyMapping = {
-      "легко": "easy",
-      "средне": "medium",
-      "сложно": "hard",
+      "Легко": "easy",
+      "Средне": "medium",
+      "Сложно": "hard",
     };
     final searchAsync = ref.watch(
       searchRecipesProvider(
@@ -73,9 +75,9 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
   Widget _buildSearchTabs() {
     return Row(
       children: [
-        _tabButton("поиск по\nназванию", SearchMode.byName),
+        _tabButton("Поиск по\nназванию", SearchMode.byName),
         const SizedBox(width: 15),
-        _tabButton("поиск по\nаниме", SearchMode.byAnime),
+        _tabButton("Поиск по\nаниме", SearchMode.byAnime),
       ],
     );
   }
@@ -165,7 +167,7 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
     );
   }
 
-  Widget _buildRecipeList(List<RecipeEntity> recipes) {
+  Widget _buildRecipeList(List<RecipeCardInfoEntity> recipes) {
     if (recipes.isEmpty) {
       return Center(
         child: Text(
@@ -243,7 +245,7 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
                     const SizedBox(height: 10),
 
                     _buildToggleGroup(
-                      options: ["легко", "средне", "сложно"],
+                      options: ["Легко", "Средне", "Сложно"],
                       selectedSet: _filters.levels,
                       onTap: (val) => setDialogState(() {
                         _filters.levels.contains(val)
