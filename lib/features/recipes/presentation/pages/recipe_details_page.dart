@@ -391,7 +391,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                                   id: 'group_${group.title}_ing_${ing.id}_${ing.name}',
                                   recipeId: '${recipe.id}',
                                   text:
-                                      '${ing.name} — ${ing.amount} ${ing.note != null ? "(${ing.note})" : ""}',
+                                      '''${ing.name}${ing.amount.isNotEmpty ? ' — ' : ''}${ing.amount} ${(ing.note != null && ing.note != '') ? "(${ing.note})" : ""}''',
                                   color: isDarkMode
                                       ? AppColors.secondary
                                       : AppColors.surface,
@@ -514,16 +514,17 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Center(
-                                  child: Text(
-                                    '$sectionIndex. ${section.title}:',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontStyle: FontStyle.italic,
-                                      color: AppColors.primaryColor,
+                                if (recipe.sections.length > 1)
+                                  Center(
+                                    child: Text(
+                                      '$sectionIndex. ${section.title}:',
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontStyle: FontStyle.italic,
+                                        color: AppColors.primaryColor,
+                                      ),
                                     ),
                                   ),
-                                ),
                                 const SizedBox(height: 12),
                                 ...section.steps.map(
                                   (step) => Column(
@@ -678,7 +679,12 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                   .toggleCooked(true);
               ref.invalidate(cookedRecipesProvider);
               Navigator.pop(context);
-              messenger.showSnackBar(const SnackBar(content: Text('Прогресс сброшен и рецепт добавлен в список приготовленных')),
+              messenger.showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Прогресс сброшен и рецепт добавлен в список приготовленных',
+                  ),
+                ),
               );
             },
             style: TextButton.styleFrom(

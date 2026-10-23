@@ -1,9 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:otakukitchen/features/recipes/domain/entities/anime_entity.dart';
-import 'package:otakukitchen/features/recipes/domain/entities/category_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_card_info.dart';
-import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/search_mode.dart';
 import 'package:otakukitchen/features/recipes/domain/repositories/recipe_repository.dart';
 import 'package:otakukitchen/features/recipes/domain/usecases/search_recipes.dart';

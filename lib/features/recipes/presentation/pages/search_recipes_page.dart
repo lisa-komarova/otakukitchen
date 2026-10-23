@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:otakukitchen/core/theme.dart';
-import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/search_mode.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/search_providers/search_recipes_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/widgets/recipe_card.dart';
@@ -176,11 +175,32 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
         ),
       );
     }
-    return ListView.builder(
-      padding: EdgeInsets.zero,
-      itemCount: recipes.length,
-      itemBuilder: (context, index) {
-        return RecipeCard(recipe: recipes[index]);
+    return OrientationBuilder(
+      builder: (ctx, orientation) {
+        final isLandscape = orientation == Orientation.landscape;
+        if (isLandscape) {
+          return GridView.builder(
+            scrollDirection: Axis.vertical,
+            padding: EdgeInsets.zero,
+            itemCount: recipes.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+
+              crossAxisCount: 3,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 1.2,
+            ),
+            itemBuilder: (context, index) => RecipeCard(recipe: recipes[index]),
+          );
+        } else {
+          return ListView.builder(
+            padding: EdgeInsets.zero,
+            itemCount: recipes.length,
+            itemBuilder: (context, index) {
+              return RecipeCard(recipe: recipes[index]);
+            },
+          );
+        }
       },
     );
   }

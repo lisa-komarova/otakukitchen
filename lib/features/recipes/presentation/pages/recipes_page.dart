@@ -47,14 +47,39 @@ class RecipesPage extends ConsumerWidget {
         body: recipesAsync.when(
           data: (recipes) => recipes.isEmpty
               ? const Center(child: Text('Рецептов пока нет :( )'))
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 10,
-                  ),
-                  itemCount: recipes.length,
-                  itemBuilder: (context, index) {
-                    return RecipeCard(recipe: recipes[index]);
+              : OrientationBuilder(
+                  builder: (ctx, orientation) {
+                    final isLandscape = orientation == Orientation.landscape;
+                    if (isLandscape) {
+                      return GridView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 10,
+                        ),
+                        itemCount: recipes.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              childAspectRatio: 1.2,
+                            ),
+                        itemBuilder: (context, index) =>
+                            RecipeCard(recipe: recipes[index]),
+                      );
+                    } else {
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 10,
+                        ),
+                        itemCount: recipes.length,
+                        itemBuilder: (context, index) {
+                          return RecipeCard(recipe: recipes[index]);
+                        },
+                      );
+                    }
                   },
                 ),
           loading: () => const Center(child: CircularProgressIndicator()),

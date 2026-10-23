@@ -10,7 +10,7 @@ class CategoriesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-     bool isDarkMode =
+    bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
     final categoriesAsync = ref.watch(categoriesProvider);
 
@@ -48,7 +48,7 @@ class CategoriesPage extends ConsumerWidget {
 
   Widget _buildCategoryCard(CategoryEntity category, BuildContext context) {
     return InkWell(
-       onTap: () {
+      onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
