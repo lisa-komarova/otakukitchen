@@ -368,36 +368,54 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                     secondChild: Column(
                       children: [
                         ...recipe.ingredientGroups.map((group) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (group.title.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 16,
-                                    bottom: 8,
-                                  ),
-                                  child: Text(
-                                    group.title,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontStyle: FontStyle.italic,
-                                      color: AppColors.primaryColor,
+                          final groupIngredientIds = group.ingredients
+                              .map(
+                                (ing) =>
+                                    'group_${group.title}_ing_${ing.id}_${ing.name}',
+                              )
+                              .toList();
+
+                          return GestureDetector(
+                            onLongPress: () {
+                              ref
+                                  .read(
+                                    checkedItemsProvider(
+                                      '${recipe.id}',
+                                    ).notifier,
+                                  )
+                                  .toggleMultipleItems(groupIngredientIds);
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (group.title.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 16,
+                                      bottom: 8,
+                                    ),
+                                    child: Text(
+                                      group.title,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontStyle: FontStyle.italic,
+                                        color: AppColors.primaryColor,
+                                      ),
                                     ),
                                   ),
+                                ...group.ingredients.map(
+                                  (ing) => CheckableItem(
+                                    id: 'group_${group.title}_ing_${ing.id}_${ing.name}',
+                                    recipeId: '${recipe.id}',
+                                    text:
+                                        '''${ing.name}${ing.amount.isNotEmpty ? ' — ' : ''}${ing.amount} ${(ing.note != null && ing.note != '') ? "(${ing.note})" : ""}''',
+                                    color: isDarkMode
+                                        ? AppColors.secondary
+                                        : AppColors.surface,
+                                  ),
                                 ),
-                              ...group.ingredients.map(
-                                (ing) => CheckableItem(
-                                  id: 'group_${group.title}_ing_${ing.id}_${ing.name}',
-                                  recipeId: '${recipe.id}',
-                                  text:
-                                      '''${ing.name}${ing.amount.isNotEmpty ? ' — ' : ''}${ing.amount} ${(ing.note != null && ing.note != '') ? "(${ing.note})" : ""}''',
-                                  color: isDarkMode
-                                      ? AppColors.secondary
-                                      : AppColors.surface,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           );
                         }),
                       ],
@@ -494,76 +512,97 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                         ...recipe.sections.map((section) {
                           final sectionIndex =
                               recipe.sections.indexOf(section) + 1;
-                          return Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.only(
-                              bottom: 20,
-                              left: 10,
-                              right: 10,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 24,
-                              horizontal: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isDarkMode
-                                  ? AppColors.cardColor
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(32),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (recipe.sections.length > 1)
-                                  Center(
-                                    child: Text(
-                                      '$sectionIndex. ${section.title}:',
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontStyle: FontStyle.italic,
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                const SizedBox(height: 12),
-                                ...section.steps.map(
-                                  (step) => Column(
-                                    children: [
-                                      CheckableItem(
-                                        id: 'step_${section.title}_${step.stepNumber}',
-                                        recipeId: '${recipe.id}',
-                                        text: step.description,
-                                        textColor: isDarkMode
-                                            ? AppColors.textPrimary
-                                            : null,
-                                        color: isDarkMode
-                                            ? AppColors.cardColor
-                                            : Colors.white,
-                                      ),
-                                      if (step != section.steps.last)
-                                        Image.asset(
-                                          'assets/icons/divider.png',
-                                          width: 10,
-                                          height: 10,
-                                          color: AppColors.primaryColor,
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                                if (recipe.sections.last == section)
-                                  const Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.only(top: 16),
+                          final sectionStepIds = section.steps
+                              .map(
+                                (step) =>
+                                    'step_${section.title}_${step.stepNumber}',
+                              )
+                              .toList();
+
+                          return GestureDetector(
+                            onLongPress: () {
+                              ref
+                                  .read(
+                                    checkedItemsProvider(
+                                      '${recipe.id}',
+                                    ).notifier,
+                                  )
+                                  .toggleMultipleItems(sectionStepIds);
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(
+                                bottom: 20,
+                                left: 10,
+                                right: 10,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 24,
+                                horizontal: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isDarkMode
+                                    ? AppColors.cardColor
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(32),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (recipe.sections.length > 1)
+                                    Center(
                                       child: Text(
-                                        'Приятного аппетита!',
-                                        style: TextStyle(
+                                        '$sectionIndex. ${section.title}:',
+                                        style: const TextStyle(
+                                          fontSize: 18,
                                           fontStyle: FontStyle.italic,
                                           color: AppColors.primaryColor,
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
+                                  const SizedBox(height: 12),
+                                  ...section.steps.map((step) {
+                                    final stepId =
+                                        'step_${section.title}_${step.stepNumber}';
+
+                                    return Column(
+                                      children: [
+                                        CheckableItem(
+                                          id: stepId,
+                                          recipeId: '${recipe.id}',
+                                          text: step.description,
+                                          textColor: isDarkMode
+                                              ? AppColors.textPrimary
+                                              : null,
+                                          color: isDarkMode
+                                              ? AppColors.cardColor
+                                              : Colors.white,
+                                        ),
+                                        if (step != section.steps.last)
+                                          Image.asset(
+                                            'assets/icons/divider.png',
+                                            width: 10,
+                                            height: 10,
+                                            color: AppColors.primaryColor,
+                                          ),
+                                      ],
+                                    );
+                                  }),
+                                  if (recipe.sections.last == section)
+                                    const Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(top: 16),
+                                        child: Text(
+                                          'Приятного аппетита!',
+                                          style: TextStyle(
+                                            fontStyle: FontStyle.italic,
+                                            color: AppColors.primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           );
                         }),

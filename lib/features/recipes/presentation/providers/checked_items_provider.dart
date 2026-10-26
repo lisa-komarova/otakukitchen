@@ -14,7 +14,21 @@ class CheckedItems extends _$CheckedItems {
       state = {...state, id};
     }
   }
-   void clearAll() {
+
+  void toggleMultipleItems(List<String> ids) {
+    final allChecked = ids.every((id) => state.contains(id));
+
+    if (allChecked) {
+      state = {
+        for (final id in state)
+          if (!ids.contains(id)) id,
+      };
+    } else {
+      state = {...state, ...ids};
+    }
+  }
+
+  void clearAll() {
     state = {};
   }
 }
