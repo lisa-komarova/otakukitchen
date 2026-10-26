@@ -4,75 +4,12 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f0422b3-0848-4a6a-bcdc-8fbaeee799c6" name="Changes" comment="refactor: optimize recipe loading">
-      <change afterPath="$PROJECT_DIR$/assets/images/04TdL-HF6m48VSafNGJ-JWPbyVThq4Ru3vsOdrTmsf8-vJhrfvw8CBwBAK.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/1448706718_386728828.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/157547334_250805893390981_5389972619768209552_n.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/1591176464_04f548daafa984b3d73367d3f1f742c5.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/1651474.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/1b8d72bf0f2c3555f47cc9781e87fa92.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/489463075_10237291197727767_1505178345196480309_n.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/518697014_10172359741640207_2367976522696214544_n.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/592e9db551450de67a170b85352dbd0f.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/5K3oOPcVGi0Kd--vM_uV5tMiqjvR4FRJcWOTfYvbyEmoVro_K3Ok1BnZUTRNk-2.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/5c4037d93a43a78a3390dbc023ce915f.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/79678d1c2a18cf7d9a0d1a6f57009852c3483686.91.9.9.3.jpeg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/86cd290af6416723cff2a57a30e84373.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/9FbtgFGcn6SKMllHfgD8JBwyGhNRtnwrlJiDDbHOLqQkjUtBHPZBQW85RUyqG-W5_3V.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/GiR__VhaAAAdPTq.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/TDCIrhKIuMaJicb.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/_eYJQ6I8z5sPuf9i_oB4xxR9w7f2tozVJC_xQ8Wd2qO7Vwr.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/_eYJQ6I8z5sPuf9i_oB4xxR9w7f2tozVJC_xQ8Wd2qO7aZnbCUNhMD-sKxViv66Vwr.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/a8d41a223d2118b5e1f09c434d93b8ed.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/anime-food-chocola-nekopara-usaklivxb9y5pdhz.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/b4b52b9dc6816f2aa89711cc78335715.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/bntjNQRYSLmLxxeMz04JPa6XZ-hfMNLk5qDWUfFenlTqe3tDTdDwAAaONDSCF3TcoDPV2JdVy2.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/bntjNQRYSLmLxxeMz04JPa6XZ-hfMNLk5qDWUfFenlTqe3tF3TcoDPV2JdVy2.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/c87fe5637a7fbb3cf709e2f8874d6ee0.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/e1aadc6650975c7d6cc0fef1b6880999.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/eb77f551e7815562cbfb10b61e610389.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/f580db8a6582d132361571df6865a984.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/fa1242156c48751cedd1e68cdda1c85b.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/fdf01ca2d2e1dcc81fa7a3f5b40f1aac.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/hq720_2.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/lina-lina-invers.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/onimai-oniichan-wa-oshimai.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_16-01-32.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_16-04-45.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_16-17-15.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_16-22-10.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_16-26-53.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_17-52-39.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_17-55-22.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_18-00-26.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_18-10-20.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_18-13-42.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/photo_2026-07-15_18-16-43.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/silverspoon_17.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/tumblr_6dfb9c1235c1cb59c09acfbdd191a3c4_3721f4fe_2048.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/tumblr_nnajdjRKpc1t2rr2bo1_1280.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/wlSOX8nkiOi8x9MjWu38wW0_u295ayUeWOC-BHhZVj-cbviJUGRq2IpGkeV8zvpyraPxgJDo.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/xQ8Wd2qO7Vwr.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/images/zfwtR-fgv5Ge5zAEQSaReMoPVuXmrNMWobNq0lK2wYZysLK1CEGS5pKz9geh5nw2IW.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" />
+    <list default="true" id="8f0422b3-0848-4a6a-bcdc-8fbaeee799c6" name="Changes" comment="feat: add new recipes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/android/app/release/app-release.aab" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/release/app-release.aab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/core/recipe_database.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/recipe_database.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/data/mappers/ingredient_mapper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/data/mappers/ingredient_mapper.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/domain/entities/recipe_card_info.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/domain/entities/recipe_card_info.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/categories_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/categories_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/recipe_details_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/recipe_details_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/recipes_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/recipes_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/search_recipes_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/pages/search_recipes_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/categories_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/categories_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/favourite_recipes_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/favourite_recipes_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipe_details_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipe_details_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipes_by_category_provider.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipes_by_category_provider.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/features/recipes/domain/get_recipes_by_category_usecase_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/features/recipes/domain/get_recipes_by_category_usecase_test.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/features/recipes/domain/search_recipes_usecase_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/features/recipes/domain/search_recipes_usecase_test.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +80,7 @@
     &quot;Flutter Test.should execute correct SQL query for recipe name search.executor&quot;: &quot;Run&quot;,
     &quot;Flutter Test.should return recipes only from the selected category ID.executor&quot;: &quot;Run&quot;,
     &quot;Flutter Test.tests in test.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.main.dart.executor&quot;: &quot;Debug&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
@@ -244,7 +181,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784131546191</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="feat: add new recipes">
+      <option name="closed" value="true" />
+      <created>1792777553299</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1792777553299</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -268,16 +213,12 @@
     <MESSAGE value="refactor: change picture's location and add safeArea" />
     <MESSAGE value="refactor: change picture's location" />
     <MESSAGE value="refactor: optimize recipe loading" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor: optimize recipe loading" />
+    <MESSAGE value="feat: add new recipes" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add new recipes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint type="Dart">
-          <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart</url>
-          <line>52</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/widgets/checkable_item.dart</url>
           <line>25</line>
@@ -302,11 +243,6 @@
           <url>file://$PROJECT_DIR$/lib/features/recipes/data/sources/recipe_local_datasource.dart</url>
           <line>246</line>
           <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint type="Dart">
-          <url>file://$PROJECT_DIR$/lib/core/recipe_database.dart</url>
-          <line>36</line>
-          <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint type="Dart">
           <url>file://$PROJECT_DIR$/lib/core/recipe_database.dart</url>
@@ -392,6 +328,46 @@
           <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/providers/recipe_details_provider.dart</url>
           <line>22</line>
           <option name="timeStamp" value="48" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/core/recipe_database.dart</url>
+          <line>36</line>
+          <option name="timeStamp" value="50" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/core/recipe_database.dart</url>
+          <line>59</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart</url>
+          <line>32</line>
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart</url>
+          <line>52</line>
+          <option name="timeStamp" value="53" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart</url>
+          <line>73</line>
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart</url>
+          <line>94</line>
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/pages/recipe_details_page.dart</url>
+          <line>295</line>
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/lib/features/recipes/presentation/widgets/recipe_card.dart</url>
+          <line>105</line>
+          <option name="timeStamp" value="57" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

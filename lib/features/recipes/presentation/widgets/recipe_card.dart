@@ -103,6 +103,7 @@ class _RecipeInfo extends StatelessWidget {
           maxLines: 2,
         ),
         const SizedBox(height: 8),
+        if (recipe.cookingTime.isNotEmpty)
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

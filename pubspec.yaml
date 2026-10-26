@@ -118,6 +118,7 @@ flutter:
     - assets/no_connection.png
     - assets/images/
     - assets/new_recipes.sql
+    - assets/new_recipes_autumn_2026.sql
     - google_fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see

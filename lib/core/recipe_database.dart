@@ -21,7 +21,7 @@ Future<Database> initDB(String filePath) async {
 
   return await openDatabase(
     path,
-    version: 3,
+    version: 4,
     onUpgrade: (db, oldVersion, newVersion) async {
       if (oldVersion < 2) {
         try {
@@ -37,6 +37,29 @@ Future<Database> initDB(String filePath) async {
       if (oldVersion < 3) {
         try {
           final String sqlScript = await rootBundle.loadString('assets/new_recipes.sql');
+
+          final List<String> queries = sqlScript
+              .split(';')
+              .map((q) => q.trim())
+              .where((q) => q.isNotEmpty)
+              .toList();
+
+          final batch = db.batch();
+          for (var query in queries) {
+            batch.execute(query);
+          }
+
+          await batch.commit(noResult: true);
+
+          if (kDebugMode) print("Успешно выполнено ${queries.length} запросов!");
+        } catch (e) {
+          if (kDebugMode) print("Ошибка миграции: $e");
+          rethrow;
+        }
+      }
+      if (oldVersion < 4) {
+        try {
+          final String sqlScript = await rootBundle.loadString('assets/new_recipes_autumn_2026.sql');
 
           final List<String> queries = sqlScript
               .split(';')
