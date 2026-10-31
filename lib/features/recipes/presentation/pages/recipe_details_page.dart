@@ -376,6 +376,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                               .toList();
 
                           return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
                             onLongPress: () {
                               ref
                                   .read(
@@ -520,6 +521,7 @@ class _RecipeDetailsPageState extends ConsumerState<RecipeDetailsPage> {
                               .toList();
 
                           return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
                             onLongPress: () {
                               ref
                                   .read(

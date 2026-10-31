@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  // 💜 Base
+  // Base
   static const Color background = Color(0xFFFFADA5);
   static const Color backgroundSoft = Color(0xFFF2DFBB);
 
-  // 🍰 UI
+  // UI
   static const Color surface = Color(0xFFFFF7E7);
   static const Color primaryColor = Color(0xFF301659); // Dark Purple
 
-  // 🌾 Accent
+  // Accent
   static const Color accent = Color(0xFFF2DA91);
 
-  // 💜 Secondary (лаванда)
+  // Secondary (лаванда)
   static const Color secondary = Color(0xFFB7A3BF);
 
-  // 📝 Text
+  // Text
   static const Color textPrimary = Color(0xFF301659);
   static const Color textSecondary = Color(0xFF7A5C4D);
 
@@ -47,7 +47,7 @@ class AppTheme {
       ),
 
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.secondary, // 💜 лаванда
+        backgroundColor: AppColors.secondary,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
@@ -67,7 +67,7 @@ class AppTheme {
 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryColor, // 🍓
+          backgroundColor: AppColors.primaryColor,
           foregroundColor: Colors.white,
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -91,11 +91,29 @@ class AppTheme {
       ),
 
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: AppColors.accent, // 🌾
+        backgroundColor: AppColors.accent,
         foregroundColor: AppColors.textPrimary,
       ),
 
       iconTheme: IconThemeData(color: AppColors.textPrimary),
+
+      scrollbarTheme: ScrollbarThemeData(
+        thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+          if (states.contains(WidgetState.dragged)) {
+            return AppColors.primaryColor;
+          }
+          return AppColors.primaryColor.withOpacity(0.5);
+        }),
+
+        trackColor: WidgetStateProperty.all(Colors.black.withValues(alpha: 0.0)),
+        trackBorderColor: WidgetStateProperty.all(Colors.black.withValues(alpha: 0.0)),
+
+        thickness: WidgetStateProperty.all(8.0),
+        radius: const Radius.circular(15),
+
+        crossAxisMargin: 12.0,
+        mainAxisMargin: 8.0,
+      ),
 
       textTheme: TextTheme(
         headlineLarge: GoogleFonts.pangolin().copyWith(
@@ -258,6 +276,21 @@ class AppTheme {
       ),
 
       iconTheme: IconThemeData(color: Colors.white),
+
+      scrollbarTheme: ScrollbarThemeData(
+        thumbColor: WidgetStateProperty.resolveWith<Color?>((states) {
+          if (states.contains(WidgetState.dragged)) {
+            return AppColors.secondary;
+          }
+          return AppColors.secondary.withOpacity(0.4);
+        }),
+        trackColor: WidgetStateProperty.all(Colors.black.withValues(alpha: 0.0)),
+        trackBorderColor: WidgetStateProperty.all(Colors.black.withValues(alpha: 0.0)),
+        thickness: WidgetStateProperty.all(8.0),
+        radius: const Radius.circular(15),
+        crossAxisMargin: 12.0,
+        mainAxisMargin: 8.0,
+      ),
 
       textTheme: TextTheme(
         headlineLarge: GoogleFonts.pangolin(

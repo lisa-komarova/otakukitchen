@@ -50,6 +50,7 @@ class RecipesPage extends ConsumerWidget {
               : OrientationBuilder(
                   builder: (ctx, orientation) {
                     final isLandscape = orientation == Orientation.landscape;
+                    final ScrollController _verticalController = ScrollController();
                     if (isLandscape) {
                       return GridView.builder(
                         scrollDirection: Axis.horizontal,
@@ -69,15 +70,23 @@ class RecipesPage extends ConsumerWidget {
                             RecipeCard(recipe: recipes[index]),
                       );
                     } else {
-                      return ListView.builder(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                          vertical: 10,
+                      return Scrollbar(
+                        controller: _verticalController,
+                        thumbVisibility: true,
+                        trackVisibility: true,
+                        interactive: true,
+                        child: ListView.builder(
+                          controller: _verticalController,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                            vertical: 10,
+                          ),
+                          itemCount: recipes.length,
+                          itemBuilder: (context, index) {
+                            return RecipeCard(recipe: recipes[index]);
+                          },
                         ),
-                        itemCount: recipes.length,
-                        itemBuilder: (context, index) {
-                          return RecipeCard(recipe: recipes[index]);
-                        },
                       );
                     }
                   },
