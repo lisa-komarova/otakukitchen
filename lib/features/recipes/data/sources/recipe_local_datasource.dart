@@ -2,6 +2,7 @@ import 'package:otakukitchen/features/recipes/data/models/anime_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/category_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/ingredient_group_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/ingredient_in_recipe_model.dart';
+import 'package:otakukitchen/features/recipes/data/models/ingredient_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/recipe_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/recipe_section_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/step_model.dart';
@@ -29,12 +30,15 @@ abstract class RecipeLocalDataSource {
     String query,
     String levels,
     String categories,
+    String ingredients,
   );
   Future<List<RecipeCardInfoModel>> searchRecipesByAnimeTitle(
     String query,
     String levels,
     String categories,
+    String ingredients,
   );
+  Future<List<IngredientModel>> getIngredients();
 }
 
 class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
@@ -222,19 +226,37 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
     String query,
     String levels,
     String categories,
+    String ingredients,
   ) async {
-    final maps = await db.rawQuery(
-      '''
-        SELECT r.id, r.name, r.cooking_time, r.image_url, a.title as title FROM recipes r
+    String sql = '''
+    SELECT r.id, r.name, r.cooking_time, r.image_url, a.title as title FROM recipes r
         JOIN recipes_in_anime ria ON r.id = ria.recipe_id
         JOIN animes a ON ria.anime_id = a.id
         WHERE a.title LIKE ? 
-          AND (? = '' OR r.level IN ($levels))
-        AND (? = '' OR r.category_id IN (SELECT id FROM categories WHERE name IN ($categories)))
-      ''',
-      ['%$query%', levels, categories],
-    );
+    ''';
+    final List<dynamic> args = ['%$query%'];
 
+    if (levels.isNotEmpty) {
+      sql += ' AND r.level IN ($levels)';
+    }
+
+    if (categories.isNotEmpty) {
+      sql +=
+          ' AND r.category_id IN (SELECT id FROM categories WHERE name IN ($categories))';
+    }
+
+    if (ingredients.isNotEmpty) {
+      sql +=
+          ''' AND EXISTS (
+              SELECT 1
+              FROM ingredient_groups ig
+              JOIN ingredients_in_recipe iir ON ig.id = iir.group_id
+              WHERE ig.recipe_id = r.id
+                AND iir.ingredient_id IN ($ingredients)
+            )''';
+    }
+
+    final maps = await db.rawQuery(sql, args);
     return maps.map((m) => RecipeCardInfoModel.fromMap(m)).toList();
   }
 
@@ -243,19 +265,45 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
     String query,
     String levels,
     String categories,
+    String ingredients,
   ) async {
-    final maps = await db.rawQuery(
-      '''
-        SELECT r.id, r.name, r.cooking_time, r.image_url, a.title as title 
-        FROM recipes r   
-        JOIN recipes_in_anime ria ON r.id = ria.recipe_id
-        JOIN animes a ON ria.anime_id = a.id 
-        WHERE r.name LIKE ? 
-          AND (? = '' OR r.level IN ($levels))
-          AND (? = '' OR r.category_id IN (SELECT id FROM categories WHERE name IN ($categories)))
-         ''',
-      ['%$query%', levels, categories],
-    );
+    String sql = '''
+    SELECT 
+      r.id, 
+      r.name, 
+      r.cooking_time, 
+      r.image_url, 
+      a.title AS title 
+    FROM recipes r   
+    JOIN recipes_in_anime ria ON r.id = ria.recipe_id
+    JOIN animes a ON ria.anime_id = a.id 
+    WHERE r.name LIKE ?
+  ''';
+
+    final List<dynamic> args = ['%$query%'];
+
+    if (levels.isNotEmpty) {
+      sql += ' AND r.level IN ($levels)';
+    }
+
+    if (categories.isNotEmpty) {
+      sql +=
+          ' AND r.category_id IN (SELECT id FROM categories WHERE name IN ($categories))';
+    }
+
+    if (ingredients.isNotEmpty) {
+      sql +=
+      ''' AND EXISTS (
+              SELECT 1
+              FROM ingredient_groups ig
+              JOIN ingredients_in_recipe iir ON ig.id = iir.group_id
+              WHERE ig.recipe_id = r.id
+                AND iir.ingredient_id IN ($ingredients)
+            )''';
+    }
+
+    final maps = await db.rawQuery(sql, args);
+
     return maps.map((m) => RecipeCardInfoModel.fromMap(m)).toList();
   }
 
@@ -265,5 +313,14 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
     SELECT COUNT(*) FROM recipes 
     ''');
     return Sqflite.firstIntValue(result) ?? 0;
+  }
+
+  @override
+  Future<List<IngredientModel>> getIngredients() async {
+    final maps = await db.query(
+      'ingredients',
+      orderBy: 'name COLLATE NOCASE ASC',
+    );
+    return maps.map((m) => IngredientModel.fromMap(m)).skip(1).toList();
   }
 }

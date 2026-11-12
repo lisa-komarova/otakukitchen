@@ -1,4 +1,5 @@
 import 'package:otakukitchen/features/recipes/domain/entities/category_entity.dart';
+import 'package:otakukitchen/features/recipes/domain/entities/ingredient_group_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 
 import '../entities/recipe_card_info.dart';
@@ -16,10 +17,13 @@ abstract class RecipeRepository {
     String query,
     String levels,
     String categories,
+    String ingredients,
   );
   Future<List<RecipeCardInfoEntity>> searchRecipesByAnimeTitle(
     String query,
     String levels,
     String categories,
+    String ingredients,
   );
+  Future<List<IngredientEntity>> getIngredients();
 }

@@ -6,7 +6,7 @@ part of 'checked_items_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$checkedItemsHash() => r'94737f15d7f83c58b64017cae6d18e5d9cc5a4c4';
+String _$checkedItemsHash() => r'4c4f7f69397e7ab88524025370b9f83592b553ba';
 
 /// Copied from Dart SDK
 class _SystemHash {

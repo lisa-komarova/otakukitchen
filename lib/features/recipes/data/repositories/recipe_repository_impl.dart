@@ -1,6 +1,7 @@
 import 'package:otakukitchen/features/recipes/data/mappers/ingredient_mapper.dart';
 import 'package:otakukitchen/features/recipes/data/mappers/recipe_section_mapper.dart';
 import 'package:otakukitchen/features/recipes/data/sources/recipe_local_datasource.dart';
+import 'package:otakukitchen/features/recipes/domain/entities/ingredient_group_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/recipe_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/category_entity.dart';
 import 'package:otakukitchen/features/recipes/domain/entities/anime_entity.dart';
@@ -107,13 +108,13 @@ class RecipeRepositoryImpl extends RecipeRepository {
     return recipes
         .map(
           (recipe) => RecipeCardInfoEntity(
-        id: recipe.id,
-        name: recipe.name,
-        cookingTime: recipe.cookingTime,
-        imageUrl: recipe.imageUrl,
-        animeTitle: recipe.animeTitle,
-      ),
-    )
+            id: recipe.id,
+            name: recipe.name,
+            cookingTime: recipe.cookingTime,
+            imageUrl: recipe.imageUrl,
+            animeTitle: recipe.animeTitle,
+          ),
+        )
         .toList();
   }
 
@@ -124,13 +125,13 @@ class RecipeRepositoryImpl extends RecipeRepository {
     return recipes
         .map(
           (recipe) => RecipeCardInfoEntity(
-        id: recipe.id,
-        name: recipe.name,
-        cookingTime: recipe.cookingTime,
-        imageUrl: recipe.imageUrl,
-        animeTitle: recipe.animeTitle,
-      ),
-    )
+            id: recipe.id,
+            name: recipe.name,
+            cookingTime: recipe.cookingTime,
+            imageUrl: recipe.imageUrl,
+            animeTitle: recipe.animeTitle,
+          ),
+        )
         .toList();
   }
 
@@ -139,23 +140,25 @@ class RecipeRepositoryImpl extends RecipeRepository {
     String query,
     String levels,
     String categories,
+    String ingredients,
   ) async {
     final recipes = await datasource.searchRecipesByAnimeTitle(
       query,
       levels,
       categories,
+      ingredients,
     );
 
     return recipes
         .map(
           (recipe) => RecipeCardInfoEntity(
-        id: recipe.id,
-        name: recipe.name,
-        cookingTime: recipe.cookingTime,
-        imageUrl: recipe.imageUrl,
-        animeTitle: recipe.animeTitle,
-      ),
-    )
+            id: recipe.id,
+            name: recipe.name,
+            cookingTime: recipe.cookingTime,
+            imageUrl: recipe.imageUrl,
+            animeTitle: recipe.animeTitle,
+          ),
+        )
         .toList();
   }
 
@@ -164,23 +167,25 @@ class RecipeRepositoryImpl extends RecipeRepository {
     String query,
     String levels,
     String categories,
+    String ingredients,
   ) async {
     final recipes = await datasource.searchRecipesByName(
       query,
       levels,
       categories,
+      ingredients,
     );
 
     return recipes
         .map(
           (recipe) => RecipeCardInfoEntity(
-        id: recipe.id,
-        name: recipe.name,
-        cookingTime: recipe.cookingTime,
-        imageUrl: recipe.imageUrl,
-        animeTitle: recipe.animeTitle,
-      ),
-    )
+            id: recipe.id,
+            name: recipe.name,
+            cookingTime: recipe.cookingTime,
+            imageUrl: recipe.imageUrl,
+            animeTitle: recipe.animeTitle,
+          ),
+        )
         .toList();
   }
 
@@ -188,5 +193,19 @@ class RecipeRepositoryImpl extends RecipeRepository {
   Future<int> getRecipesAmount() async {
     int amount = await datasource.getRecipesAmount();
     return amount;
+  }
+
+  @override
+  Future<List<IngredientEntity>> getIngredients() async {
+    final ingredients = await datasource.getIngredients();
+    return ingredients
+        .map(
+          (ingredient) => IngredientEntity(
+            id: ingredient.id,
+            name: ingredient.name,
+            amount: ingredient.amount,
+          ),
+        )
+        .toList();
   }
 }

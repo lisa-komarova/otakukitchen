@@ -14,8 +14,10 @@ Future<List<RecipeCardInfoEntity>> searchRecipes(
   required String query,
   required SearchMode mode,  
   String? levels,  
-  String? categories, 
-}) {
+  String? categories,
+      String? ingredients,
+int? numberOfIngredients
+    }) {
   final useCase = ref.watch(searchRecipesUseCaseProvider);
 
   return useCase.call(
@@ -23,5 +25,7 @@ Future<List<RecipeCardInfoEntity>> searchRecipes(
     mode: mode,
     levels: levels,
     categories: categories,
+    ingredients: ingredients,
+    numberOfIngredients:  numberOfIngredients
   );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:otakukitchen/features/recipes/data/models/ingredient_model.dart';
 import 'package:otakukitchen/features/recipes/data/models/recipe_card_info_model.dart';
 import 'package:otakukitchen/features/recipes/data/sources/recipe_local_datasource.dart';
 import 'package:sqflite/sqflite.dart';
@@ -54,10 +55,10 @@ void main() {
     test('getRecipeById throws Exception when not found', () async {
       when(
         () =>
-            mockDb.query('recipes', where: 'id = ?', whereArgs: [99], limit: 1),
+            mockDb.query('recipes', where: 'id = ?', whereArgs: [899], limit: 1),
       ).thenAnswer((_) async => []);
 
-      expect(() => dataSource.getRecipeById(99), throwsException);
+      expect(() => dataSource.getRecipeById(899), throwsA(isA<Exception>()),);
     });
 
     test('getCategory returns Category when found', () async {
@@ -89,7 +90,7 @@ void main() {
         ),
       ).thenAnswer((_) async => []);
 
-      expect(() => dataSource.getCategory(99), throwsException);
+      expect(() => dataSource.getCategory(99),  throwsA(isA<Exception>()),);
     });
 
     test('getAnimesByRecipe returns list of Anime', () async {
@@ -227,22 +228,25 @@ void main() {
         },
       ];
 
-      test('should perform a rawQuery and return a list of RecipesCardInfo', () async {
-        // arrange
-        when(
-          () => mockDb.rawQuery(any(), any()),
-        ).thenAnswer((_) async => tRecipesRaw);
+      test(
+        'should perform a rawQuery and return a list of RecipesCardInfo',
+        () async {
+          // arrange
+          when(
+            () => mockDb.rawQuery(any(), any()),
+          ).thenAnswer((_) async => tRecipesRaw);
 
-        // act
-        final result = await dataSource.getRecipesByCategory(tCategory);
+          // act
+          final result = await dataSource.getRecipesByCategory(tCategory);
 
-        // assert
-        verify(() => mockDb.rawQuery(any(), [tCategory])).called(1);
+          // assert
+          verify(() => mockDb.rawQuery(any(), [tCategory])).called(1);
 
-        expect(result, isA<List<RecipeCardInfoModel>>());
-        expect(result.length, 1);
-        expect(result.first.name, 'Рамен');
-      });
+          expect(result, isA<List<RecipeCardInfoModel>>());
+          expect(result.length, 1);
+          expect(result.first.name, 'Рамен');
+        },
+      );
 
       test('should throw an exception when database execution fails', () async {
         // arrange
@@ -254,7 +258,7 @@ void main() {
         final call = dataSource.getRecipesByCategory(tCategory);
 
         // assert
-        expect(() => call, throwsA(isA<Exception>()));
+        expect(call, throwsA(isA<Exception>()));
       });
     });
 
@@ -286,6 +290,126 @@ void main() {
       ).called(1);
     });
   });
+  group('getRecipesAmount', () {
+    test('should return recipes count from database', () async {
+      when(
+            () => mockDb.rawQuery(any()),
+      ).thenAnswer((_) async => [
+        {'COUNT(*)': 15},
+      ]);
+
+      final result = await dataSource.getRecipesAmount();
+
+      expect(result, 15);
+
+      verify(
+            () => mockDb.rawQuery(
+          any(that: contains('SELECT COUNT(*) FROM recipes')),
+        ),
+      ).called(1);
+    });
+
+    test('should return 0 when database result is empty', () async {
+      when(
+            () => mockDb.rawQuery(any()),
+      ).thenAnswer((_) async => []);
+
+      final result = await dataSource.getRecipesAmount();
+
+      expect(result, 0);
+    });
+  });
+  group('getIngredients', () {
+    test('should return list of ingredients from database', () async {
+      final maps = [
+        {'id': 0, 'name': 'All'},
+        {'id': 1, 'name': 'Chicken'},
+        {'id': 2, 'name': 'Rice'},
+      ];
+
+      when(
+            () => mockDb.query(
+          'ingredients',
+          orderBy: 'name COLLATE NOCASE ASC',
+        ),
+      ).thenAnswer((_) async => maps);
+
+      final result = await dataSource.getIngredients();
+
+      expect(result, isA<List<IngredientModel>>());
+      expect(result.length, 2);
+      expect(result.first.id, 1);
+      expect(result.last.name, 'Rice');
+
+      verify(
+            () => mockDb.query(
+          'ingredients',
+          orderBy: 'name COLLATE NOCASE ASC',
+        ),
+      ).called(1);
+    });
+
+    test('should return empty list when no ingredients exist', () async {
+      when(
+            () => mockDb.query(
+          'ingredients',
+          orderBy: 'name COLLATE NOCASE ASC',
+        ),
+      ).thenAnswer((_) async => []);
+
+      final result = await dataSource.getIngredients();
+
+      expect(result, isEmpty);
+    });
+  });
+
+  group('Ingredients Filtering', () {
+    test('should add EXISTS condition when ingredients are provided', () async {
+      const ingredients = '1, 3, 5';
+
+      when(
+            () => mockDb.rawQuery(any(), any()),
+      ).thenAnswer((_) async => []);
+
+      await dataSource.searchRecipesByName(
+        '',
+        '',
+        '',
+        ingredients,
+      );
+
+      verify(
+            () => mockDb.rawQuery(
+          any(
+            that: allOf([
+              contains('AND EXISTS'),
+              contains('FROM ingredient_groups ig'),
+              contains('JOIN ingredients_in_recipe iir'),
+              contains('ig.recipe_id = r.id'),
+              contains('iir.ingredient_id IN ($ingredients)'),
+            ]),
+          ),
+          ['%%'],
+        ),
+      ).called(1);
+    });
+
+    test('should not add EXISTS condition when ingredients are empty', () async {
+      when(
+            () => mockDb.rawQuery(any(), any()),
+      ).thenAnswer((_) async => []);
+
+      await dataSource.searchRecipesByName('', '', '', '');
+
+      verify(
+            () => mockDb.rawQuery(
+          any(that: isNot(contains('AND EXISTS'))),
+          ['%%'],
+        ),
+      ).called(1);
+    });
+  });
+
   group('searchRecipesByAnimeTitle', () {
     const tQuery = 'Naruto';
     const tLevels = "'easy', 'medium'";
@@ -304,21 +428,78 @@ void main() {
     ];
 
     test('should execute correct SQL query for anime title search', () async {
-      // Arrange
       when(
-        () => mockDb.rawQuery(any(), any()),
+            () => mockDb.rawQuery(any(), any()),
       ).thenAnswer((_) async => tRecipeMap);
 
-      // Act
-      await dataSource.searchRecipesByAnimeTitle(tQuery, tLevels, tCategories);
+      await dataSource.searchRecipesByAnimeTitle(
+        tQuery,
+        tLevels,
+        tCategories,
+        '',
+      );
 
-      // Assert
       verify(
-        () => mockDb.rawQuery(
+            () => mockDb.rawQuery(
           any(
-            that: contains('JOIN recipes_in_anime'),
-          ), // Проверяем наличие JOIN
-          ['%$tQuery%', tLevels, tCategories],
+            that: allOf([
+              contains('JOIN recipes_in_anime'),
+              contains('a.title LIKE ?'),
+              contains("r.level IN ($tLevels)"),
+              contains("r.category_id IN"),
+              contains("name IN ($tCategories)"),
+            ]),
+          ),
+          ['%$tQuery%'],
+        ),
+      ).called(1);
+    });
+    test('should add EXISTS condition when ingredients are provided', () async {
+      const ingredients = '2, 4';
+
+      when(
+            () => mockDb.rawQuery(any(), any()),
+      ).thenAnswer((_) async => []);
+
+      await dataSource.searchRecipesByAnimeTitle(
+        'Naruto',
+        '',
+        '',
+        ingredients,
+      );
+
+      verify(
+            () => mockDb.rawQuery(
+          any(
+            that: allOf([
+              contains('AND EXISTS'),
+              contains('FROM ingredient_groups ig'),
+              contains('JOIN ingredients_in_recipe iir'),
+              contains('ig.recipe_id = r.id'),
+              contains('iir.ingredient_id IN (2, 4)'),
+            ]),
+          ),
+          ['%Naruto%'],
+        ),
+      ).called(1);
+    });
+
+    test('should not add EXISTS condition when ingredients are empty', () async {
+      when(
+            () => mockDb.rawQuery(any(), any()),
+      ).thenAnswer((_) async => []);
+
+      await dataSource.searchRecipesByAnimeTitle(
+        'Naruto',
+        '',
+        '',
+        '',
+      );
+
+      verify(
+            () => mockDb.rawQuery(
+          any(that: isNot(contains('AND EXISTS'))),
+          ['%Naruto%'],
         ),
       ).called(1);
     });
@@ -331,22 +512,67 @@ void main() {
       when(() => mockDb.rawQuery(any(), any())).thenAnswer((_) async => []);
 
       // Act
-      await dataSource.searchRecipesByName(tQuery, '', '');
+      await dataSource.searchRecipesByName(tQuery, '', '', '',);
 
       // Assert
       verify(
-        () => mockDb.rawQuery(any(that: contains('WHERE r.name LIKE ?')), [
-          '%Ramen%',
-          '',
-          '',
-        ]),
+            () => mockDb.rawQuery(
+          any(that: contains('WHERE r.name LIKE ?')),
+          ['%Ramen%'],
+        ),
+      ).called(1);
+    });
+
+    test('should add EXISTS condition when ingredients are provided', () async {
+      // Arrange
+      const ingredients = '1, 3, 5';
+
+      when(
+            () => mockDb.rawQuery(any(), any()),
+      ).thenAnswer((_) async => []);
+      // Act
+      await dataSource.searchRecipesByName(
+        '',
+        '',
+        '',
+        ingredients,
+      );
+    // Assert
+      verify(
+            () => mockDb.rawQuery(
+          any(
+            that: allOf([
+              contains('AND EXISTS'),
+              contains('FROM ingredient_groups ig'),
+              contains('JOIN ingredients_in_recipe iir'),
+              contains('ig.recipe_id = r.id'),
+              contains('iir.ingredient_id IN ($ingredients)'),
+            ]),
+          ),
+          ['%%'],
+        ),
+      ).called(1);
+    });
+
+    test('should not add EXISTS condition when ingredients are empty', () async {
+      when(
+            () => mockDb.rawQuery(any(), any()),
+      ).thenAnswer((_) async => []);
+
+      await dataSource.searchRecipesByName('', '', '', '');
+
+      verify(
+            () => mockDb.rawQuery(
+          any(that: isNot(contains('AND EXISTS'))),
+          ['%%'],
+        ),
       ).called(1);
     });
   });
   group('Levels Filtering', () {
     test(
       'should correctly call rawQuery with level filter and return list of card models',
-          () async {
+      () async {
         final mockRawDbResult = [
           {
             'id': 1,
@@ -358,23 +584,29 @@ void main() {
           },
         ];
 
-        when(() => mockDb.rawQuery(any(), any()))
-            .thenAnswer((_) async => mockRawDbResult);
+        when(
+          () => mockDb.rawQuery(any(), any()),
+        ).thenAnswer((_) async => mockRawDbResult);
 
-        final result = await dataSource.searchRecipesByName('', "'easy'", '');
+        final result = await dataSource.searchRecipesByName(
+          '',
+          "'easy'",
+          '',
+          '',
+        );
 
         expect(result.length, 1);
         expect(result.first.name, 'Miso Ramen');
         expect(result.first.id, 1);
 
-        verify(() => mockDb.rawQuery(
-          any(),
-          any(that: contains("'easy'")), // Ищем строку с кавычками внутри
-        )).called(1);
-
-          },
+        verify(
+              () => mockDb.rawQuery(
+            any(that: contains("r.level IN ('easy')")),
+            ['%%'],
+          ),
+        ).called(1);
+      },
     );
-
 
     test(
       'should return multiple levels when IN clause has multiple values',
@@ -392,11 +624,17 @@ void main() {
           '',
           "'easy', 'hard'",
           '',
+          '',
         );
 
         // assert
         expect(result.length, 2);
-        verify(() => mockDb.rawQuery(any(), any())).called(1);
+        verify(
+              () => mockDb.rawQuery(
+            any(that: contains("r.level IN ('easy', 'hard')")),
+            ['%%'],
+          ),
+        ).called(1);
       },
     );
   });
@@ -407,17 +645,17 @@ void main() {
       when(() => mockDb.rawQuery(any(), any())).thenAnswer((_) async => []);
 
       // Act
-      await dataSource.searchRecipesByName('', '', tCategoryId);
+      await dataSource.searchRecipesByName('', '', tCategoryId, '',);
 
       // Assert
       verify(
-        () => mockDb.rawQuery(
-          any(that: contains('category_id IN (SELECT id FROM categories')),
-          [
-            '%%', 
-            '', 
-            tCategoryId,
-          ],
+            () => mockDb.rawQuery(
+          any(
+            that: contains(
+              'category_id IN (SELECT id FROM categories',
+            ),
+          ),
+          ['%%'],
         ),
       ).called(1);
     });
@@ -435,10 +673,12 @@ void main() {
         );
 
         // Act
-        await dataSource.searchRecipesByName('Ramen', '', '');
+        await dataSource.searchRecipesByName('Ramen', '', '', '',);
 
         // Assert
-        verify(() => mockDb.rawQuery(any(), ['%Ramen%', '', ''])).called(1);
+        verify(
+              () => mockDb.rawQuery(any(), ['%Ramen%']),
+        ).called(1);
       },
     );
   });
@@ -459,19 +699,22 @@ void main() {
           tQuery,
           tLevels,
           tCategories,
+          '',
         );
 
         // Assert
         verify(
-          () => mockDb.rawQuery(
+              () => mockDb.rawQuery(
             any(
               that: allOf([
                 contains('JOIN animes'),
                 contains('a.title LIKE ?'),
-                contains('r.level IN ($tLevels)'),
+                contains("r.level IN ($tLevels)"),
+                contains("r.category_id IN"),
+                contains("name IN ($tCategories)"),
               ]),
             ),
-            ['%$tQuery%', tLevels, tCategories],
+            ['%$tQuery%'],
           ),
         ).called(1);
       },
@@ -504,7 +747,7 @@ void main() {
     ];
 
     test(
-      'updateRecipeFavouriteStatus updates is_favourite field with correct integer',
+      'updateRecipeFavouriteStatus sets is_favourite to 1',
       () async {
         // arrange
         when(
@@ -514,9 +757,7 @@ void main() {
             where: any(named: 'where'),
             whereArgs: any(named: 'whereArgs'),
           ),
-        ).thenAnswer(
-          (_) async => 1,
-        ); 
+        ).thenAnswer((_) async => 1);
 
         // act
         await dataSource.updateRecipeFavouriteStatus(true, tRecipeId);
@@ -525,16 +766,37 @@ void main() {
         verify(
           () => mockDb.update(
             'recipes',
-            {'is_favourite': 1}, 
+            {'is_favourite': 1},
             where: 'id = ?',
             whereArgs: [tRecipeId],
           ),
         ).called(1);
       },
     );
+    test('updateRecipeFavouriteStatus sets is_favourite to 0', () async {
+      when(
+            () => mockDb.update(
+          'recipes',
+          any(),
+          where: any(named: 'where'),
+          whereArgs: any(named: 'whereArgs'),
+        ),
+      ).thenAnswer((_) async => 1);
+
+      await dataSource.updateRecipeFavouriteStatus(false, tRecipeId);
+
+      verify(
+            () => mockDb.update(
+          'recipes',
+          {'is_favourite': 0},
+          where: 'id = ?',
+          whereArgs: [tRecipeId],
+        ),
+      ).called(1);
+    });
 
     test(
-      'updateRecipeCookedStatus updates is_cooked field with correct integer',
+      'updateRecipeCookedStatus sets is_cooked to 1',
       () async {
         // arrange
         when(
@@ -553,21 +815,41 @@ void main() {
         verify(
           () => mockDb.update(
             'recipes',
-            {'is_cooked': 1}, 
+            {'is_cooked': 1},
             where: 'id = ?',
             whereArgs: [tRecipeId],
           ),
         ).called(1);
       },
     );
+    test('updateRecipeCookedStatus sets is_cooked to 0', () async {
+      when(
+            () => mockDb.update(
+          'recipes',
+          any(),
+          where: any(named: 'where'),
+          whereArgs: any(named: 'whereArgs'),
+        ),
+      ).thenAnswer((_) async => 1);
 
+      await dataSource.updateRecipeCookedStatus(false, tRecipeId);
+
+      verify(
+            () => mockDb.update(
+          'recipes',
+          {'is_cooked': 0},
+          where: 'id = ?',
+          whereArgs: [tRecipeId],
+        ),
+      ).called(1);
+    });
     test(
       'getFavouriteRecipes returns list of RecipeCardInfoModel when items exist',
-          () async {
+      () async {
         final favouriteMap = [tRawRecipesMaps[0]];
 
         when(
-              () => mockDb.rawQuery(any()),
+          () => mockDb.rawQuery(any()),
         ).thenAnswer((_) async => favouriteMap);
 
         final result = await dataSource.getFavouriteRecipes();
@@ -580,31 +862,30 @@ void main() {
       },
     );
 
+    test(
+      'getCookedRecipes returns list of RecipeCardInfoModel when items exist',
+      () async {
+        final cookedMap = [
+          {
+            'id': 2,
+            'name': 'Soup',
+            'category_id': 1,
+            'cooking_time': '30',
+            'image_url': '',
+            'is_cooked': 1,
+          },
+        ];
 
-    test('getCookedRecipes returns list of RecipeCardInfoModel when items exist', () async {
-      final cookedMap = [
-        {
-          'id': 2,
-          'name': 'Soup',
-          'category_id': 1,
-          'cooking_time': '30',
-          'image_url': '',
-          'is_cooked': 1,
-        }
-      ];
+        when(() => mockDb.rawQuery(any())).thenAnswer((_) async => cookedMap);
 
-      when(() => mockDb.rawQuery(any())).thenAnswer((_) async => cookedMap);
+        final result = await dataSource.getCookedRecipes();
 
-      final result = await dataSource.getCookedRecipes();
-
-      expect(result, isA<List<RecipeCardInfoModel>>());
-      expect(result.length, 1);
-      expect(result.first.id, 2);
-      expect(result.first.name, 'Soup');
-      verify(() => mockDb.rawQuery(any())).called(1);
-    });
-
+        expect(result, isA<List<RecipeCardInfoModel>>());
+        expect(result.length, 1);
+        expect(result.first.id, 2);
+        expect(result.first.name, 'Soup');
+        verify(() => mockDb.rawQuery(any())).called(1);
+      },
+    );
   });
-
-
 }

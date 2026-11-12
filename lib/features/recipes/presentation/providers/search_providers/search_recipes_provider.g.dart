@@ -6,7 +6,7 @@ part of 'search_recipes_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchRecipesHash() => r'951aa9b471965713a5bdfa61ac24c9033308fee3';
+String _$searchRecipesHash() => r'2945d28684a5e314f4561c4f3f4c0aa4c500a36e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -45,12 +45,16 @@ class SearchRecipesFamily
     required SearchMode mode,
     String? levels,
     String? categories,
+    String? ingredients,
+    int? numberOfIngredients,
   }) {
     return SearchRecipesProvider(
       query: query,
       mode: mode,
       levels: levels,
       categories: categories,
+      ingredients: ingredients,
+      numberOfIngredients: numberOfIngredients,
     );
   }
 
@@ -63,6 +67,8 @@ class SearchRecipesFamily
       mode: provider.mode,
       levels: provider.levels,
       categories: provider.categories,
+      ingredients: provider.ingredients,
+      numberOfIngredients: provider.numberOfIngredients,
     );
   }
 
@@ -90,6 +96,8 @@ class SearchRecipesProvider
     required SearchMode mode,
     String? levels,
     String? categories,
+    String? ingredients,
+    int? numberOfIngredients,
   }) : this._internal(
          (ref) => searchRecipes(
            ref as SearchRecipesRef,
@@ -97,6 +105,8 @@ class SearchRecipesProvider
            mode: mode,
            levels: levels,
            categories: categories,
+           ingredients: ingredients,
+           numberOfIngredients: numberOfIngredients,
          ),
          from: searchRecipesProvider,
          name: r'searchRecipesProvider',
@@ -110,6 +120,8 @@ class SearchRecipesProvider
          mode: mode,
          levels: levels,
          categories: categories,
+         ingredients: ingredients,
+         numberOfIngredients: numberOfIngredients,
        );
 
   SearchRecipesProvider._internal(
@@ -123,12 +135,16 @@ class SearchRecipesProvider
     required this.mode,
     required this.levels,
     required this.categories,
+    required this.ingredients,
+    required this.numberOfIngredients,
   }) : super.internal();
 
   final String query;
   final SearchMode mode;
   final String? levels;
   final String? categories;
+  final String? ingredients;
+  final int? numberOfIngredients;
 
   @override
   Override overrideWith(
@@ -148,6 +164,8 @@ class SearchRecipesProvider
         mode: mode,
         levels: levels,
         categories: categories,
+        ingredients: ingredients,
+        numberOfIngredients: numberOfIngredients,
       ),
     );
   }
@@ -163,7 +181,9 @@ class SearchRecipesProvider
         other.query == query &&
         other.mode == mode &&
         other.levels == levels &&
-        other.categories == categories;
+        other.categories == categories &&
+        other.ingredients == ingredients &&
+        other.numberOfIngredients == numberOfIngredients;
   }
 
   @override
@@ -173,6 +193,8 @@ class SearchRecipesProvider
     hash = _SystemHash.combine(hash, mode.hashCode);
     hash = _SystemHash.combine(hash, levels.hashCode);
     hash = _SystemHash.combine(hash, categories.hashCode);
+    hash = _SystemHash.combine(hash, ingredients.hashCode);
+    hash = _SystemHash.combine(hash, numberOfIngredients.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -193,6 +215,12 @@ mixin SearchRecipesRef
 
   /// The parameter `categories` of this provider.
   String? get categories;
+
+  /// The parameter `ingredients` of this provider.
+  String? get ingredients;
+
+  /// The parameter `numberOfIngredients` of this provider.
+  int? get numberOfIngredients;
 }
 
 class _SearchRecipesProviderElement
@@ -208,6 +236,11 @@ class _SearchRecipesProviderElement
   String? get levels => (origin as SearchRecipesProvider).levels;
   @override
   String? get categories => (origin as SearchRecipesProvider).categories;
+  @override
+  String? get ingredients => (origin as SearchRecipesProvider).ingredients;
+  @override
+  int? get numberOfIngredients =>
+      (origin as SearchRecipesProvider).numberOfIngredients;
 }
 
 // ignore_for_file: type=lint

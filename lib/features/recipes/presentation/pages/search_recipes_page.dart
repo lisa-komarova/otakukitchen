@@ -5,7 +5,9 @@ import 'package:otakukitchen/features/recipes/domain/entities/search_mode.dart';
 import 'package:otakukitchen/features/recipes/presentation/providers/search_providers/search_recipes_provider.dart';
 import 'package:otakukitchen/features/recipes/presentation/widgets/recipe_card.dart';
 
+import '../../domain/entities/ingredient_group_entity.dart';
 import '../../domain/entities/recipe_card_info.dart';
+import '../providers/ingredients_provider.dart';
 
 class SearchRecipesPage extends ConsumerStatefulWidget {
   const SearchRecipesPage({super.key});
@@ -17,10 +19,8 @@ class SearchRecipesPage extends ConsumerStatefulWidget {
 class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
   final TextEditingController _searchController = TextEditingController();
   SearchMode _currentMode = SearchMode.byName;
-  final ({Set<String> categories, Set<String> levels}) _filters = (
-    categories: {},
-    levels: {},
-  );
+  final ({Set<String> categories, Set<String> levels, Set<int> ingredientIds})
+  _filters = (categories: {}, levels: {}, ingredientIds: {});
   @override
   Widget build(BuildContext context) {
     final Map<String, String> difficultyMapping = {
@@ -36,6 +36,8 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
         levels: _filters.levels
             .map((d) => "'${difficultyMapping[d] ?? d}'")
             .join(','),
+        ingredients: _filters.ingredientIds.join(','),
+        numberOfIngredients: _filters.ingredientIds.length,
       ),
     );
     bool isDarkMode =
@@ -184,7 +186,6 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
             padding: EdgeInsets.zero,
             itemCount: recipes.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-
               crossAxisCount: 3,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
@@ -206,6 +207,304 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
   }
 
   void _showFilterDialog() {
+    final searchController = TextEditingController();
+    final selectedIngredientIds = {..._filters.ingredientIds};
+
+    // ШАГ 1: Запоминаем Future ОДИН раз перед открытием диалога.
+    // Теперь при вызове setDialogState этот Future не будет создаваться заново!
+    final ingredientsFuture = ref.read(ingredientsProvider.future);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        bool isDarkMode =
+            MediaQuery.of(context).platformBrightness == Brightness.dark;
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: isDarkMode
+                  ? AppColors.secondary
+                  : AppColors.background,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.85,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "категории",
+                        style: Theme.of(context).textTheme.headlineSmall!
+                            .copyWith(
+                              color: const Color(0xFF2D0C57),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildToggleGroup(
+                        options: [
+                          "Завтраки",
+                          "Обеды",
+                          "Ужины",
+                          "Десерты",
+                          "Напитки",
+                        ],
+                        selectedSet: _filters.categories,
+                        onTap: (val) => setDialogState(() {
+                          _filters.categories.contains(val)
+                              ? _filters.categories.remove(val)
+                              : _filters.categories.add(val);
+                        }),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        "сложность",
+                        style: Theme.of(context).textTheme.headlineSmall!
+                            .copyWith(
+                              color: const Color(0xFF2D0C57),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildToggleGroup(
+                        options: ["Легко", "Средне", "Сложно"],
+                        selectedSet: _filters.levels,
+                        onTap: (val) => setDialogState(() {
+                          _filters.levels.contains(val)
+                              ? _filters.levels.remove(val)
+                              : _filters.levels.add(val);
+                        }),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'ингредиенты',
+                        style: Theme.of(context).textTheme.headlineSmall!
+                            .copyWith(
+                              color: const Color(0xFF2D0C57),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Поиск ингредиентов',
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    searchController.clear();
+                                    setDialogState(() {});
+                                  },
+                                )
+                              : null,
+                          border: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                        ),
+                        onChanged: (_) => setDialogState(() {}),
+                      ),
+                      const SizedBox(height: 8),
+
+                      SizedBox(
+                        height: 220,
+                        child: FutureBuilder<List<IngredientEntity>>(
+                          future:
+                              ingredientsFuture, // Используем сохраненную переменную
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if (snapshot.hasError) {
+                              return const Text(
+                                'Не удалось загрузить ингредиенты',
+                              );
+                            }
+
+                            final ingredients = snapshot.data ?? [];
+                            final filteredIngredients = ingredients.where((
+                              ingredient,
+                            ) {
+                              return ingredient.name.toLowerCase().contains(
+                                searchController.text.toLowerCase(),
+                              );
+                            }).toList();
+
+                            final selectedIngredients = selectedIngredientIds
+                                .map(
+                                  (id) => ingredients.firstWhere(
+                                    (ingredient) => ingredient.id == id,
+                                  ),
+                                )
+                                .toList();
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (selectedIngredients.isNotEmpty) ...[
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: selectedIngredients.map((
+                                        ingredient,
+                                      ) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            setDialogState(() {
+                                              selectedIngredientIds.remove(
+                                                ingredient.id,
+                                              );
+                                            });
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Text(
+                                                  ingredient.name,
+                                                  style: TextStyle(
+                                                    color: const Color(
+                                                      0xFF2D0C57,
+                                                    ),
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 10),
+                                                Image.asset(
+                                                  'assets/icons/clear.png',
+                                                  width: 10,
+                                                  height: 10,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                        return InputChip(
+                                          label: Text(ingredient.name),
+                                          onDeleted: () {
+                                            // Локальное обновление состояния внутри StatefulBuilder диалога
+                                            setDialogState(() {
+                                              selectedIngredientIds.remove(
+                                                ingredient.id,
+                                              );
+                                            });
+                                          },
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+
+                                Expanded(
+                                  child: ListView.builder(
+                                    padding: EdgeInsets.zero,
+                                    shrinkWrap: false,
+                                    physics: const ClampingScrollPhysics(),
+                                    itemCount: filteredIngredients.length,
+                                    itemBuilder: (context, index) {
+                                      final ingredient =
+                                          filteredIngredients[index];
+                                      final isSelected = selectedIngredientIds
+                                          .contains(ingredient.id);
+
+                                      return CheckboxListTile(
+                                        dense: true,
+                                        contentPadding: EdgeInsets.zero,
+                                        title: Text(ingredient.name),
+                                        value: isSelected,
+                                        activeColor: AppColors.secondary,
+                                        onChanged: (selected) {
+                                          // Локальное обновление чекбокса без перезапуска FutureBuilder
+                                          setDialogState(() {
+                                            if (selected == true) {
+                                              selectedIngredientIds.add(
+                                                ingredient.id,
+                                              );
+                                            } else {
+                                              selectedIngredientIds.remove(
+                                                ingredient.id,
+                                              );
+                                            }
+                                          });
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2D0C57),
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 12,
+                      ),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _filters.ingredientIds
+                          ..clear()
+                          ..addAll(selectedIngredientIds);
+                      });
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "применить",
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  /*
+  void _showFilterDialog() {
+    final searchController = TextEditingController();
+
+    final selectedIngredientIds = {..._filters.ingredientIds};
     showDialog(
       context: context,
       builder: (context) {
@@ -273,6 +572,126 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
                             : _filters.levels.add(val);
                       }),
                     ),
+                    const SizedBox(height: 16),
+
+                    Text(
+                      'Ингредиенты',
+                      style: Theme.of(context).textTheme.headlineSmall!
+                          .copyWith(
+                            color: Color(0xFF2D0C57),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    TextField(
+                      controller: searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Поиск ингредиентов',
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: searchController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  searchController.clear();
+                                  setDialogState(() {});
+                                },
+                              )
+                            : null,
+                        border: const OutlineInputBorder(),
+                      ),
+                      onChanged: (_) => setDialogState(() {}),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    FutureBuilder<List<IngredientEntity>>(
+                      future: ref.read(ingredientsProvider.future),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          return const Text('Не удалось загрузить ингредиенты');
+                        }
+
+                        final ingredients = snapshot.data ?? [];
+
+                        final filteredIngredients = ingredients.where((
+                          ingredient,
+                        ) {
+                          return ingredient.name.toLowerCase().contains(
+                            searchController.text.toLowerCase(),
+                          );
+                        }).toList();
+
+                        final selectedIngredients = ingredients
+                            .where(
+                              (ingredient) =>
+                                  selectedIngredientIds.contains(ingredient.id),
+                            )
+                            .toList();
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (selectedIngredients.isNotEmpty) ...[
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: selectedIngredients.map((ingredient) {
+                                  return InputChip(
+                                    label: Text(ingredient.name),
+                                    onDeleted: () {
+                                      setDialogState(() {
+                                        selectedIngredientIds.remove(
+                                          ingredient.id,
+                                        );
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+
+                            Column(
+                              children: filteredIngredients.map((ingredient) {
+                                final isSelected = selectedIngredientIds
+                                    .contains(ingredient.id);
+
+                                return CheckboxListTile(
+                                  dense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(ingredient.name),
+                                  value: isSelected,
+                                  activeColor: AppColors.secondary,
+                                  onChanged: (selected) {
+                                    setDialogState(() {
+                                      if (selected == true) {
+                                        selectedIngredientIds.add(
+                                          ingredient.id,
+                                        );
+                                      } else {
+                                        selectedIngredientIds.remove(
+                                          ingredient.id,
+                                        );
+                                      }
+                                    });
+                                  },
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -288,7 +707,11 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
                       ),
                     ),
                     onPressed: () {
-                      setState(() {});
+                      setState(() {
+                        _filters.ingredientIds
+                          ..clear()
+                          ..addAll(selectedIngredientIds);
+                      });
                       Navigator.pop(context);
                     },
                     child: Text(
@@ -307,6 +730,7 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
       },
     );
   }
+*/
 
   Widget _buildToggleGroup({
     required List<String> options,

@@ -37,7 +37,7 @@ void main() {
       () async {
         // Arrange
         when(
-          () => mockRepository.searchRecipesByName(any(), any(), any()),
+          () => mockRepository.searchRecipesByName(any(), any(), any(), any(), ),
         ).thenAnswer((_) async => tRecipes);
 
         // Act
@@ -54,7 +54,7 @@ void main() {
           () => mockRepository.searchRecipesByName(
             tQuery,
             tLevelsQuery,
-            tCategoriesQuery,
+            tCategoriesQuery, '',
           ),
         ).called(1);
         verifyNoMoreInteractions(mockRepository);
@@ -66,7 +66,7 @@ void main() {
       () async {
         // Arrange
         when(
-          () => mockRepository.searchRecipesByAnimeTitle(any(), any(), any()),
+          () => mockRepository.searchRecipesByAnimeTitle(any(), any(), any(), any(), ),
         ).thenAnswer((_) async => tRecipes);
 
         // Act
@@ -83,7 +83,7 @@ void main() {
           () => mockRepository.searchRecipesByAnimeTitle(
             tQuery,
             tLevelsQuery,
-            tCategoriesQuery,
+            tCategoriesQuery, '',
           ),
         ).called(1);
         verifyNoMoreInteractions(mockRepository);
@@ -95,7 +95,7 @@ void main() {
       () async {
         // Arrange
         when(
-          () => mockRepository.searchRecipesByName(any(), any(), any()),
+          () => mockRepository.searchRecipesByName(any(), any(), any(), any(), ),
         ).thenAnswer((_) async => tRecipes);
 
         // Act
@@ -108,7 +108,7 @@ void main() {
 
         // Assert
         verify(
-          () => mockRepository.searchRecipesByName(tQuery, '', ''),
+          () => mockRepository.searchRecipesByName(tQuery, '', '', '', ),
         ).called(1);
       },
     );

@@ -13,17 +13,20 @@ class SearchRecipesUseCase {
     required SearchMode mode,
     String? levels,
     String? categories,
+    String? ingredients,int? numberOfIngredients
   }) {
     return switch (mode) {
       SearchMode.byName => repository.searchRecipesByName(
         query,
         levels ?? '',
         categories ?? '',
+        ingredients ?? '',
       ),
       SearchMode.byAnime => repository.searchRecipesByAnimeTitle(
         query,
         levels ?? '',
         categories ?? '',
+        ingredients ?? '',
       ),
     };
   }
