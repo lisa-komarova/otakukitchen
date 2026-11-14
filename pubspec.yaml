@@ -43,6 +43,7 @@ dependencies:
   url_launcher: ^6.3.2
   riverpod_annotation: ^2.3.5
   auto_size_text: ^3.0.0
+  in_app_review: ^2.0.12
 
 dev_dependencies:
   flutter_test:
@@ -113,6 +114,7 @@ flutter:
     - assets/icons/clear.png
     - assets/icons/forward.png
     - assets/icons/filter.png
+    - assets/icons/support.png
     - assets/logo.png
     - assets/splash_logo.png
     - assets/no_connection.png
