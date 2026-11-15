@@ -308,6 +308,13 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
                           border: const OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(20)),
                           ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderSide: BorderSide(
+                              color: Color(0xFF301659),
+                              width: 2.0,
+                            ),
+                          ),
                         ),
                         onChanged: (_) => setDialogState(() {}),
                       ),
@@ -316,8 +323,7 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
                       SizedBox(
                         height: 220,
                         child: FutureBuilder<List<IngredientEntity>>(
-                          future:
-                              ingredientsFuture, // Используем сохраненную переменную
+                          future: ingredientsFuture,
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -402,17 +408,6 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
                                             ),
                                           ),
                                         );
-                                        return InputChip(
-                                          label: Text(ingredient.name),
-                                          onDeleted: () {
-                                            // Локальное обновление состояния внутри StatefulBuilder диалога
-                                            setDialogState(() {
-                                              selectedIngredientIds.remove(
-                                                ingredient.id,
-                                              );
-                                            });
-                                          },
-                                        );
                                       }).toList(),
                                     ),
                                   ),
@@ -431,16 +426,11 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
                                       final isSelected = selectedIngredientIds
                                           .contains(ingredient.id);
 
-                                      return CheckboxListTile(
-                                        dense: true,
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text(ingredient.name),
-                                        value: isSelected,
-                                        activeColor: AppColors.secondary,
-                                        onChanged: (selected) {
-                                          // Локальное обновление чекбокса без перезапуска FutureBuilder
+                                      return GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
+                                        onTap: () {
                                           setDialogState(() {
-                                            if (selected == true) {
+                                            if (!isSelected) {
                                               selectedIngredientIds.add(
                                                 ingredient.id,
                                               );
@@ -451,6 +441,44 @@ class _SearchRecipesPageState extends ConsumerState<SearchRecipesPage> {
                                             }
                                           });
                                         },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  ingredient.name,
+                                                  style: TextStyle(
+                                                    color: const Color(
+                                                      0xFF301659,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Container(
+                                                width: 20,
+                                                height: 20,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: const Color(
+                                                      0xFF301659,
+                                                    ),
+                                                    width: 2,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                  color: isSelected
+                                                      ? const Color(0xFF301659)
+                                                      : Colors
+                                                            .transparent,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       );
                                     },
                                   ),
