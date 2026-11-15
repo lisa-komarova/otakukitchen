@@ -223,17 +223,29 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
 
   @override
   Future<List<RecipeCardInfoModel>> searchRecipesByAnimeTitle(
-    String query,
-    String levels,
-    String categories,
-    String ingredients,
-  ) async {
+      String query,
+      String levels,
+      String categories,
+      String ingredients,
+      ) async {
+    String matchCountSql = ingredients.isNotEmpty
+        ? '''(
+          SELECT COUNT(DISTINCT iir.ingredient_id)
+          FROM ingredient_groups ig
+          JOIN ingredients_in_recipe iir ON ig.id = iir.group_id
+          WHERE ig.recipe_id = r.id
+            AND iir.ingredient_id IN ($ingredients)
+        )'''
+        : '0';
+
     String sql = '''
-    SELECT r.id, r.name, r.cooking_time, r.image_url, a.title as title FROM recipes r
-        JOIN recipes_in_anime ria ON r.id = ria.recipe_id
-        JOIN animes a ON ria.anime_id = a.id
-        WHERE a.title LIKE ? 
-    ''';
+    SELECT r.id, r.name, r.cooking_time, r.image_url, a.title as title,
+           $matchCountSql as match_count
+    FROM recipes r
+    JOIN recipes_in_anime ria ON r.id = ria.recipe_id
+    JOIN animes a ON ria.anime_id = a.id
+    WHERE a.title LIKE ? 
+  ''';
     final List<dynamic> args = ['%$query%'];
 
     if (levels.isNotEmpty) {
@@ -242,38 +254,45 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
 
     if (categories.isNotEmpty) {
       sql +=
-          ' AND r.category_id IN (SELECT id FROM categories WHERE name IN ($categories))';
+      ' AND r.category_id IN (SELECT id FROM categories WHERE name IN ($categories))';
     }
 
     if (ingredients.isNotEmpty) {
-      sql +=
-          ''' AND EXISTS (
-              SELECT 1
-              FROM ingredient_groups ig
-              JOIN ingredients_in_recipe iir ON ig.id = iir.group_id
-              WHERE ig.recipe_id = r.id
-                AND iir.ingredient_id IN ($ingredients)
-            )''';
+      sql += ' AND match_count > 0';
     }
+
+    sql += ' ORDER BY match_count DESC';
 
     final maps = await db.rawQuery(sql, args);
     return maps.map((m) => RecipeCardInfoModel.fromMap(m)).toList();
   }
 
+
   @override
   Future<List<RecipeCardInfoModel>> searchRecipesByName(
-    String query,
-    String levels,
-    String categories,
-    String ingredients,
-  ) async {
+      String query,
+      String levels,
+      String categories,
+      String ingredients,
+      ) async {
+    String matchCountSql = ingredients.isNotEmpty
+        ? '''(
+          SELECT COUNT(DISTINCT iir.ingredient_id)
+          FROM ingredient_groups ig
+          JOIN ingredients_in_recipe iir ON ig.id = iir.group_id
+          WHERE ig.recipe_id = r.id
+            AND iir.ingredient_id IN ($ingredients)
+        )'''
+        : '0';
+
     String sql = '''
     SELECT 
       r.id, 
       r.name, 
       r.cooking_time, 
       r.image_url, 
-      a.title AS title 
+      a.title AS title,
+      $matchCountSql AS match_count
     FROM recipes r   
     JOIN recipes_in_anime ria ON r.id = ria.recipe_id
     JOIN animes a ON ria.anime_id = a.id 
@@ -288,24 +307,20 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
 
     if (categories.isNotEmpty) {
       sql +=
-          ' AND r.category_id IN (SELECT id FROM categories WHERE name IN ($categories))';
+      ' AND r.category_id IN (SELECT id FROM categories WHERE name IN ($categories))';
     }
 
     if (ingredients.isNotEmpty) {
-      sql +=
-      ''' AND EXISTS (
-              SELECT 1
-              FROM ingredient_groups ig
-              JOIN ingredients_in_recipe iir ON ig.id = iir.group_id
-              WHERE ig.recipe_id = r.id
-                AND iir.ingredient_id IN ($ingredients)
-            )''';
+      sql += ' AND match_count > 0';
     }
+
+    sql += ' ORDER BY match_count DESC';
 
     final maps = await db.rawQuery(sql, args);
 
     return maps.map((m) => RecipeCardInfoModel.fromMap(m)).toList();
   }
+
 
   @override
   Future<int> getRecipesAmount() async {
